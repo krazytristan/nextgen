@@ -23,10 +23,10 @@ export default function Footer() {
           >
             <div className="flex items-center gap-3 mb-5">
               <div className="w-11 h-11 rounded-xl bg-white/20 flex items-center justify-center font-bold text-lg shadow">
-                H
+                N9
               </div>
               <h4 className="fw-bold text-xl">
-                Horizon for IT Solutions
+                NEXTGEN 9 IT SOLUTIONS
               </h4>
             </div>
 
@@ -107,7 +107,7 @@ export default function Footer() {
             </h6>
 
             <p className="text-white/80 mb-5">
-              Meet the professionals behind Horizon — engineers, developers,
+              Meet the professionals behind NEXTGEN 9 — engineers, developers,
               and innovators working together.
             </p>
 
@@ -126,7 +126,7 @@ export default function Footer() {
         {/* ================= BOTTOM ================= */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-6 text-white/70 text-sm">
           <p className="mb-0">
-            © {new Date().getFullYear()} Horizon for IT Solutions. All rights reserved.
+            © {new Date().getFullYear()} NEXTGEN 9 IT SOLUTIONS. All rights reserved.
           </p>
 
           <div className="flex gap-6">

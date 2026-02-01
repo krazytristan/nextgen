@@ -1,8 +1,29 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { useState, useEffect } from "react";
 
-/* ================= DATA ================= */
+/* ================= SERVICES DATA ================= */
 const services = [
+  {
+    title: "Custom Software Development",
+    desc: "Tailored systems engineered to solve real operational problems.",
+    icon: "⚙️",
+    accent: "from-horizon-orange to-horizon-amber",
+    tags: ["Custom Logic", "Scalable", "Business-Focused"],
+  },
+  {
+    title: "Web & Mobile Applications",
+    desc: "Fast, responsive applications designed with modern UX principles.",
+    icon: "📱",
+    accent: "from-horizon-amber to-horizon-green",
+    tags: ["Web Apps", "Mobile", "UX/UI"],
+  },
+  {
+    title: "Systems Integration",
+    desc: "Connecting platforms, data, and workflows into one ecosystem.",
+    icon: "🔗",
+    accent: "from-horizon-green to-horizon-orange",
+    tags: ["APIs", "Automation", "Data Flow"],
+  },
   {
     title: "Web Development",
     desc: "High-performance, responsive websites and web applications built for scale and reliability.",
@@ -13,7 +34,7 @@ const services = [
   {
     title: "System Development",
     desc: "Custom systems engineered around real business workflows and operational needs.",
-    icon: "⚙️",
+    icon: "🧠",
     accent: "from-horizon-amber to-horizon-green",
     tags: ["Automation", "Integration", "Custom Logic"],
   },
@@ -52,7 +73,7 @@ export default function Services() {
   const [paused, setPaused] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
-  /* Detect mobile */
+  /* ================= MOBILE DETECTION ================= */
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
     check();
@@ -63,33 +84,33 @@ export default function Services() {
   return (
     <section
       id="services"
-      className="relative py-32 overflow-hidden bg-gradient-to-b from-white via-horizon-yellow/30 to-white"
+      className="relative py-24 md:py-32 overflow-hidden bg-gradient-to-b from-white via-horizon-yellow/30 to-white"
     >
-      <div className="relative container">
+      <div className="container relative">
         <div className="row">
-          {/* LEFT INTRO */}
-          <div className="col-lg-4 mb-20 lg:mb-0">
+          {/* ================= LEFT INTRO ================= */}
+          <div className="col-lg-4 mb-16 lg:mb-0">
             <div className="lg:sticky lg:top-36">
               <span className="inline-block mb-4 px-4 py-2 rounded-full bg-horizon-orange/10 text-horizon-orange text-sm font-medium">
-                Our Expertise
+                Our Services
               </span>
 
-              <h2 className="text-5xl fw-bold leading-tight mb-6">
-                Services Built for{" "}
+              <h2 className="text-4xl md:text-5xl fw-bold leading-tight mb-6">
+                Solutions Built for{" "}
                 <span className="text-horizon-orange">Modern Businesses</span>
               </h2>
 
               <p className="text-lg text-gray-600 max-w-md">
-                Carefully designed solutions that reduce complexity and deliver
-                long-term reliability.
+                We deliver scalable, secure, and future-ready IT solutions
+                designed to support real business growth.
               </p>
             </div>
           </div>
 
-          {/* RIGHT — AUTO SCROLL LIST */}
+          {/* ================= RIGHT — AUTO SCROLL LIST ================= */}
           <div className="col-lg-8">
             <div
-              className="relative h-[540px] overflow-hidden"
+              className="relative h-[520px] overflow-hidden"
               onMouseEnter={() => setPaused(true)}
               onMouseLeave={() => setPaused(false)}
             >
@@ -104,7 +125,7 @@ export default function Services() {
                     : { y: ["0%", "-50%"] }
                 }
                 transition={{
-                  duration: 36,
+                  duration: 40,
                   ease: "linear",
                   repeat: Infinity,
                 }}
@@ -117,12 +138,12 @@ export default function Services() {
                     transition={{ type: "spring", stiffness: 260, damping: 20 }}
                     className="group relative flex gap-6 bg-white/75 backdrop-blur-xl rounded-[2rem] p-7 shadow-xl border border-white/40 hover:shadow-2xl"
                   >
-                    {/* Accent rail */}
+                    {/* ACCENT RAIL */}
                     <div
                       className={`absolute left-0 top-0 h-full w-1.5 rounded-l-[2rem] bg-gradient-to-b ${service.accent}`}
                     />
 
-                    {/* Icon */}
+                    {/* ICON */}
                     <div className="flex-shrink-0">
                       <div
                         className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${service.accent} text-white flex items-center justify-center text-2xl shadow`}
@@ -131,7 +152,7 @@ export default function Services() {
                       </div>
                     </div>
 
-                    {/* Content */}
+                    {/* CONTENT */}
                     <div className="flex-1">
                       <h4 className="fw-bold text-xl mb-2 group-hover:text-horizon-orange transition">
                         {service.title}
@@ -157,21 +178,6 @@ export default function Services() {
               </motion.div>
             </div>
           </div>
-        </div>
-
-        {/* CTA */}
-        <div className="text-center mt-32">
-          <h3 className="text-3xl fw-bold mb-6">
-            Let’s Build Something Reliable
-          </h3>
-
-          <a
-            href="#contact"
-            className="inline-flex items-center gap-3 px-10 py-4 rounded-full text-white bg-gradient-to-r from-horizon-orange to-horizon-green shadow-2xl hover:shadow-[0_20px_60px_rgba(236,143,94,0.45)] transition"
-          >
-            Start Your Project
-            <span className="text-xl">→</span>
-          </a>
         </div>
       </div>
     </section>

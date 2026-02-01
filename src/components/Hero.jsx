@@ -3,207 +3,163 @@ import { useEffect, useRef, useState } from "react";
 
 const slides = [
   {
-    id: "web",
     title: "Web Systems",
-    desc: "Custom-built web platforms designed for performance, scalability, and growth.",
-    icon: "⚙️",
-    target: "#services",
+    desc: "High-performance platforms engineered for scalability, reliability, and speed.",
   },
   {
-    id: "cloud",
+    title: "System Development",
+    desc: "Custom-built information systems tailored to streamline operations and improve efficiency.",
+  },
+  {
     title: "Cloud Solutions",
-    desc: "Flexible and secure cloud infrastructure for modern digital operations.",
-    icon: "☁️",
-    target: "#services",
+    desc: "Secure, flexible cloud infrastructure that evolves with your business.",
   },
   {
-    id: "support",
+    title: "Mobile Applications",
+    desc: "Cross-platform mobile apps designed for performance, usability, and growth.",
+  },
+  {
+    title: "UI / UX Design",
+    desc: "User-centered designs that create intuitive, engaging, and consistent digital experiences.",
+  },
+  {
     title: "IT Support",
-    desc: "Proactive monitoring, maintenance, and technical support you can rely on.",
-    icon: "🛠️",
-    target: "#services",
+    desc: "Proactive monitoring, maintenance, and expert technical assistance.",
   },
   {
-    id: "security",
+    title: "Network & Infrastructure",
+    desc: "Reliable network design, setup, and maintenance for secure connectivity.",
+  },
+  {
     title: "Cybersecurity",
-    desc: "Protecting systems, data, and users through modern security practices.",
-    icon: "🔐",
-    target: "#services",
+    desc: "Modern security strategies to protect systems, data, and users.",
   },
 ];
 
 export default function Hero() {
   const [index, setIndex] = useState(0);
-  const [paused, setPaused] = useState(false);
   const reduceMotion = useReducedMotion();
-  const intervalRef = useRef(null);
+  const timer = useRef(null);
 
-  /* ---------- AUTO ROTATION ---------- */
-  useEffect(() => {
-    if (paused) return;
-
-    intervalRef.current = setInterval(() => {
+  const startCarousel = () => {
+    timer.current = setInterval(() => {
       setIndex((i) => (i + 1) % slides.length);
-    }, 5600);
-
-    return () => clearInterval(intervalRef.current);
-  }, [paused]);
-
-  /* ---------- KEYBOARD CONTROL ---------- */
-  useEffect(() => {
-    const onKey = (e) => {
-      if (e.key === "ArrowRight") {
-        setIndex((i) => (i + 1) % slides.length);
-      }
-      if (e.key === "ArrowLeft") {
-        setIndex((i) => (i - 1 + slides.length) % slides.length);
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, []);
-
-  /* ---------- SWIPE ---------- */
-  const onDragEnd = (_, info) => {
-    if (info.offset.x > 100) {
-      setIndex((i) => (i - 1 + slides.length) % slides.length);
-    } else if (info.offset.x < -100) {
-      setIndex((i) => (i + 1) % slides.length);
-    }
+    }, 4800);
   };
+
+  useEffect(() => {
+    startCarousel();
+    return () => clearInterval(timer.current);
+  }, []);
 
   return (
     <section
       id="home"
-      className="relative min-h-screen flex items-center overflow-hidden"
+      className="relative min-h-screen flex items-center overflow-hidden
+                 bg-gradient-to-b from-[#7fa95e] to-horizon-green text-white"
     >
-      {/* BACKGROUND */}
-      <div className="absolute inset-0 bg-gradient-to-br from-horizon-orange via-horizon-amber to-horizon-yellow" />
-      <div className="absolute -top-48 -left-48 w-[600px] h-[600px] bg-horizon-green/30 rounded-full blur-[180px]" />
-      <div className="absolute bottom-[-300px] right-[-300px] w-[760px] h-[760px] bg-white/20 rounded-full blur-[200px]" />
+      {/* top accent */}
+      <div className="absolute top-0 left-0 w-full h-[3px]
+                      bg-gradient-to-r from-horizon-orange via-horizon-amber to-transparent" />
 
-      <div className="relative z-10 container pt-40">
-        <div className="row align-items-center">
-          {/* ================= LEFT ================= */}
-          <div className="col-lg-6 text-white">
-            <span className="inline-flex items-center gap-2 mb-8 px-4 py-2 rounded-full bg-white/20 backdrop-blur text-sm">
-              🚀 Horizon for IT Solutions
-            </span>
+      <div className="container px-6 pt-24 sm:pt-28 lg:pt-40">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-20 items-center">
 
-            <h1 className="text-[3.2rem] lg:text-6xl fw-bold leading-[1.05] mb-8">
-              Building <br />
-              <span className="relative inline-block">
-                <span className="relative z-10 text-horizon-yellow">
-                  Reliable & Scalable
-                </span>
-                <span className="absolute left-0 bottom-1 w-full h-3 bg-white/25 rounded-full" />
-              </span>{" "}
-              <br />
-              IT Solutions
-            </h1>
+          {/* LEFT */}
+          <div className="text-left">
+            <motion.span
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="inline-block mb-5 px-5 py-2 rounded-full
+                         bg-white/15 text-xs sm:text-sm font-semibold"
+            >
+              🚀 NEXGEN 9 IT SOLUTIONS
+            </motion.span>
 
-            <p className="text-lg opacity-90 max-w-xl mb-10">
-              We design, develop, and support modern IT systems that drive
-              efficiency, security, and long-term growth.
-            </p>
+            <motion.h1
+              initial={{ opacity: 0, y: 22 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-[2rem] sm:text-[2.6rem] lg:text-[3.8rem]
+                         font-extrabold leading-tight mb-5"
+            >
+              Next-Generation{" "}
+              <span className="block text-horizon-amber">
+                IT Solutions
+              </span>
+              for Modern Businesses
+            </motion.h1>
 
-            <div className="flex flex-wrap gap-4 mb-12">
+            <motion.p
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="max-w-xl
+                         text-white/85 text-sm sm:text-base lg:text-lg mb-8"
+            >
+              We design, build, and support secure digital systems that help
+              organizations scale efficiently and operate with confidence.
+            </motion.p>
+
+            <div className="flex flex-col sm:flex-row gap-4">
               <a
                 href="#services"
-                className="px-10 py-3 rounded-full bg-white text-horizon-orange fw-semibold shadow-xl hover:scale-105 transition"
+                className="px-8 py-3 rounded-full bg-white
+                           text-horizon-green font-semibold shadow
+                           hover:opacity-90 transition"
               >
-                View Services
+                Explore Services
               </a>
               <a
                 href="#contact"
-                className="px-10 py-3 rounded-full border border-white/50 text-white backdrop-blur hover:bg-white/10 transition"
+                className="px-8 py-3 rounded-full border
+                           border-white/60 text-white
+                           hover:bg-white/10 transition"
               >
-                Contact Us
+                Talk to Us
               </a>
-            </div>
-
-            {/* MICRO STATS */}
-            <div className="flex gap-8 text-sm text-white/85 flex-wrap">
-              <span>✔ 5+ Years Experience</span>
-              <span>✔ 120+ Projects</span>
-              <span>✔ Enterprise-ready</span>
             </div>
           </div>
 
-          {/* ================= RIGHT ================= */}
-          <div className="col-lg-6 mt-24 mt-lg-0">
-            <div className="perspective-[1800px] max-w-md mx-auto">
+          {/* RIGHT – CAROUSEL */}
+          <div
+            className="relative flex justify-start"
+            onMouseEnter={() => clearInterval(timer.current)}
+            onMouseLeave={startCarousel}
+          >
+            <div className="relative w-full max-w-md
+                            lg:border-l lg:border-white/25 lg:pl-10
+                            text-left">
+
+              {/* counter */}
+              <div className="mb-4 lg:absolute lg:-left-6 lg:top-0
+                              text-white/40 text-xs font-mono">
+                {String(index + 1).padStart(2, "0")} /{" "}
+                {String(slides.length).padStart(2, "0")}
+              </div>
+
               <AnimatePresence mode="wait">
                 <motion.div
                   key={index}
-                  drag="x"
-                  dragConstraints={{ left: 0, right: 0 }}
-                  onDragEnd={onDragEnd}
-                  onMouseEnter={() => setPaused(true)}
-                  onMouseLeave={() => setPaused(false)}
-                  onFocus={() => setPaused(true)}
-                  onBlur={() => setPaused(false)}
                   initial={
                     reduceMotion
                       ? { opacity: 0 }
-                      : { opacity: 0, x: 120, rotateY: 18 }
+                      : { opacity: 0, y: 18 }
                   }
-                  animate={{ opacity: 1, x: 0, rotateY: 0 }}
+                  animate={{ opacity: 1, y: 0 }}
                   exit={
                     reduceMotion
                       ? { opacity: 0 }
-                      : { opacity: 0, x: -120, rotateY: -18 }
+                      : { opacity: 0, y: -18 }
                   }
-                  transition={{ duration: 0.6, ease: "easeOut" }}
-                  className="relative bg-white/30 backdrop-blur-2xl rounded-[2.6rem] p-12 shadow-2xl text-white text-center cursor-grab active:cursor-grabbing"
+                  transition={{ duration: 0.4, ease: "easeOut" }}
                 >
-                  {/* ICON */}
-                  <div className="mx-auto mb-6 w-20 h-20 rounded-2xl bg-gradient-to-br from-horizon-orange to-horizon-green flex items-center justify-center text-4xl shadow-xl">
-                    {slides[index].icon}
-                  </div>
-
-                  <h3 className="text-2xl fw-bold mb-4">
+                  <h3 className="text-xl sm:text-2xl lg:text-3xl
+                                 font-bold mb-3">
                     {slides[index].title}
                   </h3>
-
-                  <p className="opacity-90 mb-8 leading-relaxed">
+                  <p className="text-white/80 text-sm sm:text-base
+                                leading-relaxed">
                     {slides[index].desc}
                   </p>
-
-                  <a
-                    href={slides[index].target}
-                    className="inline-block px-7 py-2.5 rounded-full bg-gradient-to-r from-horizon-orange to-horizon-amber text-white shadow"
-                  >
-                    Learn More →
-                  </a>
-
-                  {/* PROGRESS BAR */}
-                  {!paused && (
-                    <div className="mt-10 h-1.5 w-full bg-white/20 rounded-full overflow-hidden">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: "100%" }}
-                        transition={{ duration: 5.6, ease: "linear" }}
-                        className="h-full bg-white/80 rounded-full"
-                      />
-                    </div>
-                  )}
-
-                  {/* DOTS */}
-                  <div className="flex justify-center gap-3 mt-7">
-                    {slides.map((_, i) => (
-                      <button
-                        key={i}
-                        onClick={() => setIndex(i)}
-                        aria-label={`Slide ${i + 1}`}
-                        className={`w-3 h-3 rounded-full transition ${
-                          i === index
-                            ? "bg-white scale-125"
-                            : "bg-white/40 hover:bg-white"
-                        }`}
-                      />
-                    ))}
-                  </div>
                 </motion.div>
               </AnimatePresence>
             </div>
@@ -211,11 +167,12 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* SCROLL INDICATOR */}
+      {/* scroll hint */}
       <motion.div
-        animate={{ y: [0, 18, 0] }}
+        animate={{ y: [0, 10, 0] }}
         transition={{ repeat: Infinity, duration: 2 }}
-        className="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/70 text-xs tracking-widest uppercase"
+        className="absolute bottom-6 left-1/2 -translate-x-1/2
+                   text-white/60 text-[10px] tracking-widest uppercase"
       >
         Scroll
       </motion.div>

@@ -1,41 +1,24 @@
 import { useEffect, useRef, useState } from "react";
-import {
-  motion,
-  AnimatePresence,
-  useReducedMotion,
-} from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 
 const sections = ["home", "about", "services", "team", "contact"];
 
 export default function Navbar() {
   const [active, setActive] = useState("home");
   const [open, setOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const [progress, setProgress] = useState(0);
   const [hidden, setHidden] = useState(false);
 
   const lastScrollY = useRef(0);
   const reduceMotion = useReducedMotion();
 
-  /* ================= SCROLL BEHAVIOR ================= */
+  /* ================= SCROLL HIDE ================= */
   useEffect(() => {
     const onScroll = () => {
       const y = window.scrollY;
-      const docHeight =
-        document.documentElement.scrollHeight - window.innerHeight;
-
-      setProgress(docHeight > 0 ? (y / docHeight) * 100 : 0);
-      setScrolled(y > 50);
-
-      if (y > lastScrollY.current + 8 && y > 140) {
-        setHidden(true);
-      } else if (y < lastScrollY.current - 8) {
-        setHidden(false);
-      }
-
+      if (y > lastScrollY.current + 10 && y > 120) setHidden(true);
+      else if (y < lastScrollY.current - 10) setHidden(false);
       lastScrollY.current = y;
     };
-
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
@@ -43,131 +26,110 @@ export default function Navbar() {
   /* ================= ACTIVE SECTION ================= */
   useEffect(() => {
     const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActive(entry.target.id);
-          }
-        });
-      },
-      {
-        threshold: 0.45,
-        rootMargin: "-120px 0px -35% 0px",
-      }
+      (entries) =>
+        entries.forEach((e) => e.isIntersecting && setActive(e.target.id)),
+      { threshold: 0.5 }
     );
 
     sections.forEach((id) => {
       const el = document.getElementById(id);
-      if (el) observer.observe(el);
+      el && observer.observe(el);
     });
 
     return () => observer.disconnect();
   }, []);
 
-  /* ================= MOBILE UX ================= */
-  useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [open]);
-
-  useEffect(() => {
-    const onKey = (e) => e.key === "Escape" && setOpen(false);
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, []);
-
   return (
     <>
-      {/* ================= SCROLL PROGRESS ================= */}
-      <div className="fixed top-0 left-0 w-full h-[3px] z-[70] bg-black/5">
-        <motion.div
-          className="h-full bg-gradient-to-r from-horizon-orange via-horizon-amber to-horizon-green"
-          animate={{ width: `${progress}%` }}
-          transition={{ duration: 0.25, ease: "easeOut" }}
-        />
-      </div>
-
-      {/* ================= NAVBAR ================= */}
-      <motion.nav
-        initial={reduceMotion ? false : { y: -80, opacity: 0 }}
-        animate={{ y: hidden ? -110 : 0, opacity: 1 }}
-        transition={{ duration: 0.35, ease: "easeOut" }}
-        className={`fixed top-0 w-full z-50 ${
-          scrolled
-            ? "backdrop-blur-2xl bg-white/70 shadow-lg"
-            : "bg-transparent"
-        }`}
-        role="navigation"
-        aria-label="Main navigation"
+      {/* ===== NAVBAR ===== */}
+      <motion.header
+        initial={reduceMotion ? false : { y: -60, opacity: 0 }}
+        animate={{ y: hidden ? -80 : 0, opacity: 1 }}
+        transition={{ duration: 0.25, ease: "easeOut" }}
+        className="fixed top-4 inset-x-0 z-50"
       >
-        <div className="container flex items-center justify-between py-3">
-          {/* LOGO */}
-          <motion.a
-            href="#home"
-            whileHover={{ scale: 1.06 }}
-            className="flex items-center gap-3 focus:outline-none focus-visible:ring-2 ring-horizon-orange rounded-md"
+        <nav className="mx-auto max-w-7xl px-4 sm:px-6">
+          <div
+            className="flex items-center justify-between 
+                       h-16 sm:h-[72px] px-4 sm:px-6 
+                       rounded-2xl sm:rounded-full
+                       bg-white/85 backdrop-blur-xl 
+                       shadow-lg border border-white/40"
           >
-            <motion.div
-              animate={reduceMotion ? {} : { rotate: [0, 2, -2, 0] }}
-              transition={{ repeat: Infinity, duration: 8 }}
-              className="w-10 h-10 rounded-xl bg-gradient-to-br from-horizon-orange to-horizon-amber text-white flex items-center justify-center font-bold shadow-md"
-            >
-              H
-            </motion.div>
-            <span className="fw-bold text-xl tracking-wide text-horizon-orange">
-              Horizon IT
-            </span>
-          </motion.a>
+            {/* BRAND */}
+            <a href="#home" className="flex items-center gap-3 min-w-0">
+              <div
+                className="shrink-0 w-9 h-9 rounded-full 
+                           bg-gradient-to-br from-horizon-orange to-horizon-amber 
+                           text-white flex items-center justify-center 
+                           text-xs font-bold shadow"
+              >
+                N9
+              </div>
 
-          {/* DESKTOP MENU */}
-          <ul className="hidden lg:flex items-center gap-10">
-            {sections.map((item) => (
-              <li key={item} className="relative">
-                <a
-                  href={`#${item}`}
-                  className={`fw-medium transition-colors duration-300 ${
-                    active === item
-                      ? "text-horizon-orange"
-                      : "text-gray-700 hover:text-horizon-orange"
-                  }`}
-                >
-                  {item.charAt(0).toUpperCase() + item.slice(1)}
-                </a>
+              {/* NAME + TAGLINE (VISIBLE ON MOBILE) */}
+              <div className="flex flex-col leading-tight truncate">
+                <span className="text-xs sm:text-sm fw-bold tracking-wide text-gray-900 truncate">
+                  NEXGEN 9 IT SOLUTIONS
+                </span>
+                <span className="text-[10px] sm:text-[11px] tracking-wide text-gray-500 truncate">
+                  Future-Ready Digital Systems
+                </span>
+              </div>
+            </a>
 
-                {active === item && (
-                  <motion.span
-                    layoutId="nav-underline"
-                    className="absolute left-0 -bottom-2 h-[3px] w-full rounded-full bg-gradient-to-r from-horizon-orange to-horizon-green"
-                  />
-                )}
-              </li>
-            ))}
+            {/* DESKTOP MENU */}
+            <ul className="hidden lg:flex items-center gap-8 relative">
+              {sections.map((item) => (
+                <li key={item} className="relative">
+                  <a
+                    href={`#${item}`}
+                    className={`text-sm transition ${
+                      active === item
+                        ? "text-horizon-orange"
+                        : "text-gray-700 hover:text-horizon-orange"
+                    }`}
+                  >
+                    {item.charAt(0).toUpperCase() + item.slice(1)}
+                  </a>
 
-            {/* CTA */}
-            <motion.a
+                  {active === item && (
+                    <motion.span
+                      layoutId="navLine"
+                      className="absolute -bottom-2 left-0 right-0 
+                                 h-[2px] rounded-full 
+                                 bg-gradient-to-r from-horizon-orange to-horizon-amber"
+                    />
+                  )}
+                </li>
+              ))}
+            </ul>
+
+            {/* CTA (DESKTOP ONLY) */}
+            <a
               href="#contact"
-              whileHover={{ scale: 1.07 }}
-              whileTap={{ scale: 0.96 }}
-              className="px-5 py-2 rounded-full text-white bg-gradient-to-r from-horizon-orange to-horizon-amber shadow-lg hover:shadow-xl focus:outline-none focus-visible:ring-2 ring-horizon-orange"
+              className="hidden lg:inline-flex items-center 
+                         px-5 py-2 rounded-full 
+                         text-sm fw-semibold text-white
+                         bg-gradient-to-r from-horizon-orange to-horizon-amber
+                         shadow hover:scale-105 transition"
             >
               Get Started
-            </motion.a>
-          </ul>
+            </a>
 
-          {/* MOBILE BUTTON */}
-          <button
-            onClick={() => setOpen(true)}
-            className="lg:hidden text-3xl text-horizon-orange focus:outline-none focus-visible:ring-2 ring-horizon-orange rounded"
-            aria-label="Open menu"
-          >
-            ☰
-          </button>
-        </div>
-      </motion.nav>
+            {/* MOBILE BUTTON */}
+            <button
+              onClick={() => setOpen(true)}
+              className="lg:hidden text-xl text-gray-800 ml-3"
+              aria-label="Open menu"
+            >
+              ☰
+            </button>
+          </div>
+        </nav>
+      </motion.header>
 
-      {/* ================= MOBILE MENU ================= */}
+      {/* ===== MOBILE MENU ===== */}
       <AnimatePresence>
         {open && (
           <>
@@ -180,31 +142,30 @@ export default function Navbar() {
             />
 
             <motion.div
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ type: "spring", stiffness: 220, damping: 26 }}
-              className="fixed top-0 right-0 h-full w-80 bg-white z-50 p-8 flex flex-col shadow-2xl"
+              initial={{ y: 40, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 40, opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              className="fixed bottom-6 left-4 right-4 
+                         bg-white rounded-3xl p-8 z-50 shadow-2xl"
             >
-              <button
-                onClick={() => setOpen(false)}
-                className="self-end text-2xl text-horizon-orange mb-10"
-                aria-label="Close menu"
-              >
-                ✕
-              </button>
+              {/* Mobile Brand */}
+              <div className="text-center mb-8">
+                <h4 className="fw-bold text-gray-900">
+                  NEXGEN 9 IT SOLUTIONS
+                </h4>
+                <p className="text-xs text-gray-500">
+                  Future-Ready Digital Systems
+                </p>
+              </div>
 
-              <ul className="flex flex-col gap-6">
+              <ul className="flex flex-col gap-6 text-center">
                 {sections.map((item) => (
                   <a
                     key={item}
                     href={`#${item}`}
                     onClick={() => setOpen(false)}
-                    className={`text-xl fw-medium transition ${
-                      active === item
-                        ? "text-horizon-orange"
-                        : "text-gray-700 hover:text-horizon-orange"
-                    }`}
+                    className="text-lg fw-medium text-gray-800"
                   >
                     {item.charAt(0).toUpperCase() + item.slice(1)}
                   </a>
@@ -214,7 +175,10 @@ export default function Navbar() {
               <a
                 href="#contact"
                 onClick={() => setOpen(false)}
-                className="mt-auto text-center px-6 py-3 rounded-full text-white bg-gradient-to-r from-horizon-orange to-horizon-amber shadow-lg"
+                className="mt-8 block text-center 
+                           px-6 py-3 rounded-full 
+                           text-white fw-semibold
+                           bg-gradient-to-r from-horizon-orange to-horizon-amber"
               >
                 Get Started
               </a>
