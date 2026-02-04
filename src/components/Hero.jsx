@@ -1,46 +1,31 @@
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import {
+  motion,
+  AnimatePresence,
+  useReducedMotion,
+  useMotionValue,
+  useTransform,
+  useScroll,
+} from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 
 const slides = [
-  {
-    title: "Web Systems",
-    desc: "High-performance platforms engineered for scalability, reliability, and speed.",
-  },
-  {
-    title: "System Development",
-    desc: "Custom-built information systems tailored to streamline operations and improve efficiency.",
-  },
-  {
-    title: "Cloud Solutions",
-    desc: "Secure, flexible cloud infrastructure that evolves with your business.",
-  },
-  {
-    title: "Mobile Applications",
-    desc: "Cross-platform mobile apps designed for performance, usability, and growth.",
-  },
-  {
-    title: "UI / UX Design",
-    desc: "User-centered designs that create intuitive, engaging, and consistent digital experiences.",
-  },
-  {
-    title: "IT Support",
-    desc: "Proactive monitoring, maintenance, and expert technical assistance.",
-  },
-  {
-    title: "Network & Infrastructure",
-    desc: "Reliable network design, setup, and maintenance for secure connectivity.",
-  },
-  {
-    title: "Cybersecurity",
-    desc: "Modern security strategies to protect systems, data, and users.",
-  },
+  { title: "Web Systems", desc: "High-performance platforms engineered for scalability, reliability, and speed." },
+  { title: "System Development", desc: "Custom-built information systems tailored to streamline operations and improve efficiency." },
+  { title: "Cloud Solutions", desc: "Secure, flexible cloud infrastructure that evolves with your business." },
+  { title: "Mobile Applications", desc: "Cross-platform mobile apps designed for performance, usability, and growth." },
+  { title: "UI / UX Design", desc: "User-centered designs that create intuitive, engaging, and consistent digital experiences." },
+  { title: "IT Support", desc: "Proactive monitoring, maintenance, and expert technical assistance." },
+  { title: "Network & Infrastructure", desc: "Reliable network design, setup, and maintenance for secure connectivity." },
+  { title: "Cybersecurity", desc: "Modern security strategies to protect systems, data, and users." },
 ];
 
 export default function Hero() {
   const [index, setIndex] = useState(0);
   const reduceMotion = useReducedMotion();
   const timer = useRef(null);
+  const sectionRef = useRef(null);
 
+  /* ================= CAROUSEL ================= */
   const startCarousel = () => {
     timer.current = setInterval(() => {
       setIndex((i) => (i + 1) % slides.length);
@@ -52,21 +37,111 @@ export default function Hero() {
     return () => clearInterval(timer.current);
   }, []);
 
+  /* ================= SCROLL FADE ================= */
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start start", "end start"],
+  });
+
+  const gridFade = useTransform(scrollYProgress, [0, 0.45], [1, 0]);
+
+  /* ================= RESPONSIVE MOUSE PARALLAX ================= */
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  const bgX = useTransform(mouseX, [-0.5, 0.5], ["-3px", "3px"]);
+  const bgY = useTransform(mouseY, [-0.5, 0.5], ["-3px", "3px"]);
+
+  const fgX = useTransform(mouseX, [-0.5, 0.5], ["-6px", "6px"]);
+  const fgY = useTransform(mouseY, [-0.5, 0.5], ["-6px", "6px"]);
+
+  const handleMouseMove = (e) => {
+    if (window.innerWidth < 1024 || reduceMotion) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    mouseX.set((e.clientX - rect.left) / rect.width - 0.5);
+    mouseY.set((e.clientY - rect.top) / rect.height - 0.5);
+  };
+
   return (
     <section
+      ref={sectionRef}
       id="home"
+      onMouseMove={handleMouseMove}
       className="relative min-h-screen flex items-center overflow-hidden
-                 bg-gradient-to-b from-[#7fa95e] to-horizon-green text-white"
+                 bg-gradient-to-b from-[#8fb36b] to-[#6f8f55] text-white"
     >
-      {/* top accent */}
-      <div className="absolute top-0 left-0 w-full h-[3px]
-                      bg-gradient-to-r from-horizon-orange via-horizon-amber to-transparent" />
+      {/* TOP ACCENT */}
+      <div
+        aria-hidden
+        className="absolute top-0 left-0 w-full h-[3px]
+                   bg-gradient-to-r from-horizon-orange via-horizon-amber to-transparent"
+      />
 
-      <div className="container px-6 pt-24 sm:pt-28 lg:pt-40">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-20 items-center">
+      {/* ================= BACK GRID (RESPONSIVE) ================= */}
+      <motion.div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 z-0"
+        style={{
+          x: bgX,
+          y: bgY,
+          opacity: gridFade,
+          backgroundImage: `
+            linear-gradient(to right, rgba(255,255,255,0.18) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(255,255,255,0.18) 1px, transparent 1px)
+          `,
+          backgroundSize: "min(72px, 12vw) min(72px, 12vw)", // responsive density
+        }}
+        animate={
+          reduceMotion
+            ? {}
+            : { backgroundPosition: ["0px 0px", "72px 72px"] }
+        }
+        transition={{
+          duration: 160,
+          ease: "linear",
+          repeat: Infinity,
+        }}
+      />
+
+      {/* ================= FOREGROUND GRID ================= */}
+      <motion.div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 z-0"
+        style={{
+          x: fgX,
+          y: fgY,
+          opacity: gridFade,
+          backgroundImage: `
+            linear-gradient(to right, rgba(255,255,255,0.32) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(255,255,255,0.32) 1px, transparent 1px)
+          `,
+          backgroundSize: "min(48px, 8vw) min(48px, 8vw)",
+        }}
+        animate={
+          reduceMotion
+            ? {}
+            : { backgroundPosition: ["0px 0px", "48px 48px"] }
+        }
+        transition={{
+          duration: 110,
+          ease: "linear",
+          repeat: Infinity,
+        }}
+      />
+
+      {/* VIGNETTE */}
+      <div
+        aria-hidden
+        className="absolute inset-0 z-0
+                   bg-gradient-to-b from-black/10 via-transparent to-black/25"
+      />
+
+      {/* ================= CONTENT ================= */}
+      <div className="relative z-10 container px-6 pt-28 sm:pt-32 lg:pt-40">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 lg:gap-20 items-center">
 
           {/* LEFT */}
-          <div className="text-left">
+          <div>
             <motion.span
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -79,7 +154,7 @@ export default function Hero() {
             <motion.h1
               initial={{ opacity: 0, y: 22 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-[2rem] sm:text-[2.6rem] lg:text-[3.8rem]
+              className="text-[1.9rem] sm:text-[2.6rem] lg:text-[3.8rem]
                          font-extrabold leading-tight mb-5"
             >
               Next-Generation{" "}
@@ -92,8 +167,7 @@ export default function Hero() {
             <motion.p
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
-              className="max-w-xl
-                         text-white/85 text-sm sm:text-base lg:text-lg mb-8"
+              className="max-w-xl text-white/85 text-sm sm:text-base lg:text-lg mb-8"
             >
               We design, build, and support secure digital systems that help
               organizations scale efficiently and operate with confidence.
@@ -121,17 +195,14 @@ export default function Hero() {
 
           {/* RIGHT – CAROUSEL */}
           <div
-            className="relative flex justify-start"
+            className="relative"
             onMouseEnter={() => clearInterval(timer.current)}
             onMouseLeave={startCarousel}
           >
-            <div className="relative w-full max-w-md
-                            lg:border-l lg:border-white/25 lg:pl-10
-                            text-left">
+            <div className="relative max-w-md lg:border-l lg:border-white/30 lg:pl-10">
 
-              {/* counter */}
               <div className="mb-4 lg:absolute lg:-left-6 lg:top-0
-                              text-white/40 text-xs font-mono">
+                              text-white/50 text-xs font-mono">
                 {String(index + 1).padStart(2, "0")} /{" "}
                 {String(slides.length).padStart(2, "0")}
               </div>
@@ -139,25 +210,15 @@ export default function Hero() {
               <AnimatePresence mode="wait">
                 <motion.div
                   key={index}
-                  initial={
-                    reduceMotion
-                      ? { opacity: 0 }
-                      : { opacity: 0, y: 18 }
-                  }
+                  initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 18 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={
-                    reduceMotion
-                      ? { opacity: 0 }
-                      : { opacity: 0, y: -18 }
-                  }
+                  exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -18 }}
                   transition={{ duration: 0.4, ease: "easeOut" }}
                 >
-                  <h3 className="text-xl sm:text-2xl lg:text-3xl
-                                 font-bold mb-3">
+                  <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-3">
                     {slides[index].title}
                   </h3>
-                  <p className="text-white/80 text-sm sm:text-base
-                                leading-relaxed">
+                  <p className="text-white/80 text-sm sm:text-base leading-relaxed">
                     {slides[index].desc}
                   </p>
                 </motion.div>
@@ -167,7 +228,7 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* scroll hint */}
+      {/* SCROLL HINT */}
       <motion.div
         animate={{ y: [0, 10, 0] }}
         transition={{ repeat: Infinity, duration: 2 }}

@@ -1,10 +1,5 @@
-import { useState, useEffect, useRef } from "react";
-import {
-  motion,
-  AnimatePresence,
-  useReducedMotion,
-  useInView,
-} from "framer-motion";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faXmark,
@@ -16,42 +11,26 @@ import {
   faLinkedin,
 } from "@fortawesome/free-brands-svg-icons";
 
-/* ================= ROLE DESCRIPTIONS ================= */
-function getRoleDescription(role = "") {
+/* ================= BADGE LOGIC ================= */
+function getBadge(role = "") {
   const r = role.toLowerCase();
 
   if (r.includes("founder"))
-    return "Provides strategic direction, ensures quality standards, and oversees the long-term growth of the organization.";
+    return { label: "Founder", color: "bg-horizon-orange text-white" };
 
-  if (r.includes("lead programmer") || r.includes("full stack"))
-    return "Leads system architecture, technical decisions, and ensures overall development quality.";
-
-  if (r.includes("project"))
-    return "Manages project planning, coordination, and ensures timely and efficient delivery.";
-
-  if (r.includes("ui") || r.includes("ux"))
-    return "Designs intuitive user experiences and visually engaging interfaces.";
-
-  if (r.includes("frontend"))
-    return "Builds responsive user interfaces and ensures smooth client-side interactions.";
-
-  if (r.includes("backend"))
-    return "Develops server-side logic, APIs, and database integrations.";
+  if (r.includes("lead"))
+    return { label: "Lead", color: "bg-blue-600 text-white" };
 
   if (r.includes("support"))
-    return "Assists in development tasks, system maintenance, and implementation support.";
+    return { label: "Support", color: "bg-gray-600 text-white" };
 
-  if (r.includes("marketing"))
-    return "Handles brand strategy, outreach initiatives, and marketing communications.";
-
-  return "Contributes specialized skills and collaborates with the team to deliver quality solutions.";
+  return null;
 }
 
 /* ================= DATA ================= */
 const founder = {
   name: "Tristan Jorge Cuartero",
   role: "Founder & Quality Assurance",
-  bio: "Founder of NEXGEN 9 IT Solutions. Oversees quality assurance, standards, and long-term direction.",
   image: "/team/tristan.png",
   email: "tristan.cuartero@horizonit.com",
   github: "https://github.com/krazytristan",
@@ -59,30 +38,65 @@ const founder = {
   website: "https://personal-website-sage-tau.vercel.app/",
 };
 
-const teams = [
+const devTeam1 = [
   {
-    title: "Development Team 1",
-    direction: "left",
-    members: [
-      { name: "Rodolfo Guce III", role: "Co-Founder & Lead Programmer", image: "/team/rodolfo.jpg", email: "rodolfo.guce@horizonit.com", github: "https://github.com", linkedin: "https://linkedin.com" },
-      { name: "Florencio John Fonte III", role: "Project Leader", image: "/team/fonte.jpg", email: "florencio.fonte@horizonit.com", linkedin: "https://linkedin.com" },
-      { name: "Ricky Dolor", role: "Frontend Developer", image: "/team/ricky.jpg", github: "https://github.com" },
-      { name: "John Mark Espiritu", role: "UI / UX Designer", image: "/team/johnmark.jpg", website: "https://portfolio.johnmark.dev" },
-      { name: "Charles Lois Neil Viñalon", role: "Chief Marketing Officer", image: "/team/charles.jpg", linkedin: "https://linkedin.com" },
-    ],
+    name: "Rodolfo Guce III",
+    role: "Co-Founder & Lead Programmer",
+    image: "/team/rodolfo.jpg",
+    email: "rodolfo.guce@horizonit.com",
+    github: "https://github.com",
+    linkedin: "https://linkedin.com",
   },
   {
-    title: "Development Team 2",
-    direction: "right",
-    members: [
-      { name: "Joseph Rendon Cubio", role: "Lead Programmer (Full Stack)", image: "/team/cubio.png", github: "https://github.com", linkedin: "https://linkedin.com" },
-      { name: "Marvin Paul Orozco", role: "Frontend & Backend Developer", image: "/team/marvin.png", github: "https://github.com" },
-      { name: "Kharlo Keizy Pitman", role: "Support Programmer", image: "/team/kharlo.png", email: "kharlo.pitman@horizonit.com" },
-    ],
+    name: "Florencio John Fonte III",
+    role: "Project Leader",
+    image: "/team/fonte.jpg",
+    email: "florencio.fonte@horizonit.com",
+    linkedin: "https://linkedin.com",
+  },
+  {
+    name: "Ricky Dolor",
+    role: "Frontend Developer",
+    image: "/team/ricky.jpg",
+    github: "https://github.com",
+  },
+  {
+    name: "John Mark Espiritu",
+    role: "UI / UX Designer",
+    image: "/team/johnmark.jpg",
+    website: "https://portfolio.johnmark.dev",
+  },
+  {
+    name: "Charles Lois Neil Viñalon",
+    role: "Chief Marketing Officer",
+    image: "/team/charles.jpg",
+    linkedin: "https://linkedin.com",
   },
 ];
 
-/* ================= MAIN COMPONENT ================= */
+const devTeam2 = [
+  {
+    name: "Joseph Rendon Cubio",
+    role: "Lead Programmer (Full Stack)",
+    image: "/team/cubio.png",
+    github: "https://github.com",
+    linkedin: "https://linkedin.com",
+  },
+  {
+    name: "Marvin Paul Orozco",
+    role: "Frontend & Backend Developer",
+    image: "/team/marvin.png",
+    github: "https://github.com",
+  },
+  {
+    name: "Kharlo Keizy Pitman",
+    role: "Support Programmer",
+    image: "/team/kharlo.png",
+    email: "kharlo.pitman@horizonit.com",
+  },
+];
+
+/* ================= MAIN ================= */
 export default function Team() {
   const [selected, setSelected] = useState(null);
 
@@ -96,16 +110,19 @@ export default function Team() {
     <>
       <section
         id="team"
-        className="relative py-40 bg-gradient-to-b from-white via-horizon-yellow/10 to-white"
+        className="relative py-28 lg:py-36
+                   bg-gradient-to-b from-white via-horizon-yellow/10 to-white"
       >
         <div className="container">
 
           {/* HEADER */}
-          <div className="text-center max-w-3xl mx-auto mb-32">
-            <span className="inline-flex px-6 py-2 mb-6 rounded-full bg-horizon-orange/10 text-horizon-orange text-sm font-semibold">
+          <div className="text-center max-w-3xl mx-auto mb-20">
+            <span className="inline-flex px-6 py-2 mb-6 rounded-full
+                             bg-horizon-orange/10 text-horizon-orange
+                             text-sm font-semibold">
               Our Organization
             </span>
-            <h2 className="text-4xl md:text-5xl font-extrabold mb-5">
+            <h2 className="text-4xl md:text-5xl font-extrabold mb-4">
               Leadership & <span className="text-horizon-orange">Teams</span>
             </h2>
             <p className="text-lg text-gray-600">
@@ -114,25 +131,16 @@ export default function Team() {
           </div>
 
           {/* FOUNDER */}
-          <div className="flex justify-center mb-36">
-            <FounderCard member={founder} onClick={setSelected} />
+          <div className="flex justify-center mb-24">
+            <SmallCard member={founder} highlight onClick={setSelected} />
           </div>
 
           {/* TEAMS */}
-          <div className="space-y-36">
-            {teams.map((team) => (
-              <div key={team.title}>
-                <h3 className="text-2xl font-bold text-center mb-10">
-                  {team.title}
-                </h3>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20">
 
-                <TeamCarousel
-                  members={team.members}
-                  direction={team.direction}
-                  onSelect={setSelected}
-                />
-              </div>
-            ))}
+            <TeamColumn title="Development Team 1" members={devTeam1} onSelect={setSelected} />
+            <TeamColumn title="Development Team 2" members={devTeam2} onSelect={setSelected} />
+
           </div>
         </div>
       </section>
@@ -142,7 +150,7 @@ export default function Team() {
         {selected && (
           <>
             <motion.div
-              className="fixed inset-0 bg-black/60 z-50"
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
               onClick={() => setSelected(null)}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -150,15 +158,17 @@ export default function Team() {
             />
 
             <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
+              initial={{ scale: 0.96, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="fixed inset-0 z-[60] flex items-center justify-center p-6"
+              exit={{ scale: 0.96, opacity: 0 }}
+              className="fixed inset-0 z-[60]
+                         flex items-center justify-center p-6"
             >
-              <div className="relative bg-white rounded-3xl shadow-2xl max-w-lg w-full p-10">
+              <div className="relative bg-white rounded-3xl
+                              shadow-2xl max-w-md w-full p-8">
                 <button
                   onClick={() => setSelected(null)}
-                  className="absolute top-5 right-5 text-gray-400 hover:text-horizon-orange"
+                  className="absolute top-4 right-4 text-gray-400 hover:text-horizon-orange"
                 >
                   <FontAwesomeIcon icon={faXmark} />
                 </button>
@@ -166,25 +176,21 @@ export default function Team() {
                 <img
                   src={selected.image}
                   alt={selected.name}
-                  className="w-36 h-36 mx-auto rounded-3xl object-cover shadow-lg mb-6"
+                  className="w-28 h-28 mx-auto rounded-2xl object-cover shadow mb-4"
                 />
 
-                <h3 className="font-bold text-2xl text-center">
+                <h3 className="font-bold text-xl text-center">
                   {selected.name}
                 </h3>
-                <p className="text-horizon-orange font-medium text-center">
+                <p className="text-horizon-orange text-center text-sm mb-4">
                   {selected.role}
                 </p>
 
-                <p className="text-gray-600 text-center mt-4">
-                  {selected.bio || getRoleDescription(selected.role)}
-                </p>
-
-                <div className="flex justify-center gap-4 mt-6">
-                  {selected.email && <SocialIcon href={`mailto:${selected.email}`} icon={faEnvelope} />}
-                  {selected.github && <SocialIcon href={selected.github} icon={faGithub} />}
-                  {selected.linkedin && <SocialIcon href={selected.linkedin} icon={faLinkedin} />}
-                  {selected.website && <SocialIcon href={selected.website} icon={faGlobe} />}
+                <div className="flex justify-center gap-3">
+                  <Icon href={selected.email && `mailto:${selected.email}`} icon={faEnvelope} />
+                  <Icon href={selected.github} icon={faGithub} />
+                  <Icon href={selected.linkedin} icon={faLinkedin} />
+                  <Icon href={selected.website} icon={faGlobe} />
                 </div>
               </div>
             </motion.div>
@@ -195,119 +201,83 @@ export default function Team() {
   );
 }
 
-/* ================= CAROUSEL ================= */
-function TeamCarousel({ members, direction, onSelect }) {
-  const reduceMotion = useReducedMotion();
-  const ref = useRef(null);
-  const inView = useInView(ref, { margin: "-120px" });
-
-  if (reduceMotion) {
-    return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
+/* ================= TEAM COLUMN ================= */
+function TeamColumn({ title, members, onSelect }) {
+  return (
+    <div>
+      <h3 className="text-xl font-bold mb-8 text-center lg:text-left">
+        {title}
+      </h3>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         {members.map((m) => (
-          <TeamCard key={m.name} member={m} onClick={onSelect} />
+          <SmallCard key={m.name} member={m} onClick={onSelect} />
         ))}
       </div>
-    );
-  }
-
-  return (
-    <div
-      ref={ref}
-      className="relative overflow-hidden min-h-[460px]
-                 flex items-center"
-    >
-      <motion.div
-        className="flex gap-14 w-max"
-        animate={
-          inView
-            ? { x: direction === "left" ? ["0%", "-50%"] : ["-50%", "0%"] }
-            : {}
-        }
-        transition={{ repeat: Infinity, duration: 40, ease: "linear" }}
-      >
-        {[...members, ...members].map((member, i) => (
-          <div key={i} className="w-[280px] flex-shrink-0">
-            <TeamCard member={member} onClick={onSelect} />
-          </div>
-        ))}
-      </motion.div>
     </div>
   );
 }
 
-/* ================= CARDS ================= */
-function FounderCard({ member, onClick }) {
-  return (
-    <motion.div
-      whileHover={{ y: -8 }}
-      onClick={() => onClick(member)}
-      className="bg-white rounded-[2.5rem] shadow-2xl px-12 pt-20 pb-12 text-center ring-4 ring-horizon-orange/20"
-    >
-      <img
-        src={member.image}
-        alt={member.name}
-        className="w-40 h-40 mx-auto rounded-[2rem] object-cover shadow-xl mb-6"
-      />
-      <h4 className="text-2xl font-bold">{member.name}</h4>
-      <p className="text-horizon-orange font-medium mb-6">{member.role}</p>
-      <p className="text-gray-600 max-w-md mx-auto">{member.bio}</p>
-    </motion.div>
-  );
-}
+/* ================= SMALL CARD ================= */
+function SmallCard({ member, onClick, highlight = false }) {
+  const badge = getBadge(member.role);
 
-function TeamCard({ member, onClick }) {
   return (
     <motion.div
-      whileHover={{ y: -6 }}
+      whileHover={{ y: -4 }}
       onClick={() => onClick(member)}
-      className="bg-white rounded-3xl shadow-xl px-8 py-10
-                 h-[360px]
-                 flex flex-col items-center justify-between text-center"
+      className={`cursor-pointer bg-white rounded-2xl border
+                  ${highlight ? "border-horizon-orange/40 shadow-lg" : "border-gray-100 shadow-sm"}
+                  px-5 py-6 flex gap-4 items-start`}
     >
       <img
         src={member.image}
         alt={member.name}
-        className="w-28 h-28 rounded-2xl object-cover shadow-lg"
+        className="w-16 h-16 rounded-xl object-cover shadow"
       />
-      <div>
-        <h4 className="font-bold text-lg">{member.name}</h4>
-        <p className="text-horizon-orange text-sm">{member.role}</p>
-      </div>
-      <div className="flex gap-3">
-        {member.email && <MiniIcon href={`mailto:${member.email}`} icon={faEnvelope} />}
-        {member.github && <MiniIcon href={member.github} icon={faGithub} />}
-        {member.linkedin && <MiniIcon href={member.linkedin} icon={faLinkedin} />}
-        {member.website && <MiniIcon href={member.website} icon={faGlobe} />}
+
+      <div className="flex-1">
+        <div className="flex items-center gap-2">
+          <h4 className="font-semibold leading-tight">{member.name}</h4>
+          {badge && (
+            <span
+              className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${badge.color}`}
+            >
+              {badge.label}
+            </span>
+          )}
+        </div>
+
+        <p className="text-sm text-horizon-orange">{member.role}</p>
+
+        <div className="flex gap-2 mt-3">
+          <Icon href={member.email && `mailto:${member.email}`} icon={faEnvelope} small />
+          <Icon href={member.github} icon={faGithub} small />
+          <Icon href={member.linkedin} icon={faLinkedin} small />
+          <Icon href={member.website} icon={faGlobe} small />
+        </div>
       </div>
     </motion.div>
   );
 }
 
-/* ================= ICONS ================= */
-function SocialIcon({ href, icon }) {
+/* ================= ICON ================= */
+function Icon({ href, icon, small }) {
+  const disabled = !href;
   return (
     <a
-      href={href}
+      href={href || "#"}
+      onClick={(e) => disabled && e.preventDefault()}
       target="_blank"
       rel="noopener noreferrer"
-      className="w-11 h-11 rounded-full bg-gray-100 text-gray-700 flex items-center justify-center hover:bg-horizon-orange hover:text-white transition"
+      className={`flex items-center justify-center
+                  ${small ? "w-8 h-8" : "w-10 h-10"}
+                  rounded-full
+                  ${disabled
+                    ? "bg-gray-100 text-gray-300 cursor-not-allowed"
+                    : "bg-gray-100 text-gray-600 hover:bg-horizon-orange hover:text-white"}
+                  transition`}
     >
-      <FontAwesomeIcon icon={icon} />
-    </a>
-  );
-}
-
-function MiniIcon({ href, icon }) {
-  return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      onClick={(e) => e.stopPropagation()}
-      className="w-9 h-9 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center hover:bg-horizon-orange hover:text-white transition"
-    >
-      <FontAwesomeIcon icon={icon} />
+      <FontAwesomeIcon icon={icon} className={small ? "text-xs" : ""} />
     </a>
   );
 }
