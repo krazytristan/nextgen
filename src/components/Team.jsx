@@ -46,6 +46,7 @@ const devTeam1 = [
     email: "rodolfo.guce@horizonit.com",
     github: "https://github.com",
     linkedin: "https://linkedin.com",
+    website: "https://ratbu123.github.io/Portfolio/",
   },
   {
     name: "Florencio John Fonte III",
@@ -58,7 +59,10 @@ const devTeam1 = [
     name: "Ricky Dolor",
     role: "Frontend Developer",
     image: "/team/ricky.jpg",
+    email: "dolorricky7@gmail.com",
     github: "https://github.com",
+    linkedin: "https://linkedin.com",
+    website: "https://feitan12.github.io/portfolioo/",
   },
   {
     name: "John Mark Espiritu",
