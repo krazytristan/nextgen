@@ -16,16 +16,16 @@ const yearsActive = Math.max(
 
 /* ================= ANIMATIONS ================= */
 const fadeUp = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0, y: 24 },
   show: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.6, ease: "easeOut" },
+    transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] },
   },
 };
 
 const stagger = {
-  show: { transition: { staggerChildren: 0.12 } },
+  show: { transition: { staggerChildren: 0.15 } },
 };
 
 /* ================= COUNT UP ================= */
@@ -42,7 +42,7 @@ function CountUp({ end, suffix = "" }) {
     }
 
     let current = 0;
-    const duration = 800;
+    const duration = 900;
     const step = 16;
     const increment = end / (duration / step || 1);
 
@@ -76,46 +76,48 @@ function FlipCard({ icon, title, desc }) {
     <motion.button
       onClick={() => setFlipped((v) => !v)}
       whileHover={
-        !reduceMotion && window.innerWidth >= 1024
-          ? { rotateX: -6, rotateY: 6 }
+        !reduceMotion
+          ? { rotateX: -6, rotateY: 6, scale: 1.02 }
           : {}
       }
-      transition={{ type: "spring", stiffness: 180, damping: 14 }}
-      className="relative h-44 w-full text-left focus:outline-none"
+      transition={{ type: "spring", stiffness: 160, damping: 16 }}
+      className="relative h-48 w-full text-left focus:outline-none"
       style={{ perspective: 1200 }}
       aria-pressed={flipped}
     >
       <motion.div
         animate={{ rotateY: flipped ? 180 : 0 }}
-        transition={{ duration: 0.55, ease: "easeInOut" }}
+        transition={{ duration: 0.6, ease: "easeInOut" }}
         className="absolute inset-0"
         style={{ transformStyle: "preserve-3d" }}
       >
         {/* FRONT */}
         <div
           className="absolute inset-0 bg-white border border-gray-100
-                     rounded-2xl p-6 shadow-sm
-                     flex flex-col items-center justify-center text-center"
+                     rounded-2xl p-6 shadow-md
+                     flex flex-col items-center justify-center text-center
+                     hover:shadow-lg transition"
           style={{ backfaceVisibility: "hidden" }}
         >
-          <div className="text-3xl mb-2">{icon}</div>
-          <h4 className="font-semibold">{title}</h4>
+          <div className="text-4xl mb-3">{icon}</div>
+          <h4 className="font-semibold tracking-tight">{title}</h4>
           <span className="mt-2 text-xs text-gray-400">
-            Tap to flip
+            Tap to explore
           </span>
         </div>
 
         {/* BACK */}
         <div
-          className="absolute inset-0 bg-horizon-orange text-white
-                     rounded-2xl p-6 shadow-md
+          className="absolute inset-0 bg-gradient-to-br
+                     from-horizon-orange to-horizon-yellow
+                     text-white rounded-2xl p-6 shadow-lg
                      flex items-center justify-center text-center"
           style={{
             transform: "rotateY(180deg)",
             backfaceVisibility: "hidden",
           }}
         >
-          <p className="text-sm leading-relaxed">
+          <p className="text-sm leading-relaxed font-medium">
             {desc}
           </p>
         </div>
@@ -137,10 +139,10 @@ export default function About() {
   const lineScale = useTransform(scrollYProgress, [0, 1], [0, 1]);
 
   const values = [
-    { icon: "🎯", title: "Mission", desc: "Deliver secure, scalable, and reliable digital solutions for growing organizations." },
-    { icon: "🌍", title: "Vision", desc: "Become a trusted long-term technology partner built on quality and trust." },
-    { icon: "💡", title: "Innovation", desc: "Design systems today that remain relevant and effective tomorrow." },
-    { icon: "🤝", title: "Commitment", desc: "Operate with consistency, transparency, and accountability in every project." },
+    { icon: "🎯", title: "Mission", desc: "Build secure, scalable, and resilient digital solutions that empower growth." },
+    { icon: "🌍", title: "Vision", desc: "Be a long-term technology partner trusted for quality and consistency." },
+    { icon: "💡", title: "Innovation", desc: "Create systems today that remain relevant tomorrow." },
+    { icon: "🤝", title: "Commitment", desc: "Operate with transparency, accountability, and care." },
   ];
 
   return (
@@ -152,7 +154,7 @@ export default function About() {
     >
       <div className="container relative">
 
-        {/* ================= HEADER ================= */}
+        {/* HEADER */}
         <motion.div
           variants={fadeUp}
           initial="hidden"
@@ -160,7 +162,7 @@ export default function About() {
           viewport={{ once: true }}
           className="max-w-3xl mb-24"
         >
-          <span className="inline-flex items-center gap-2 mb-5 px-6 py-2
+          <span className="inline-flex items-center gap-2 mb-6 px-6 py-2
                            rounded-full bg-horizon-orange/10
                            text-horizon-orange text-sm font-semibold">
             🚀 Established September 25, 2025
@@ -176,12 +178,12 @@ export default function About() {
           </h2>
 
           <p className="text-gray-600 text-base sm:text-lg">
-            We craft reliable, scalable, and future-ready IT solutions that help
-            organizations grow with confidence.
+            We design future-ready IT systems that help organizations move faster,
+            scale smarter, and operate with confidence.
           </p>
         </motion.div>
 
-        {/* ================= TWO COLUMNS ================= */}
+        {/* TWO COLUMNS */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 relative">
 
           {/* TIMELINE LINE */}
@@ -192,7 +194,7 @@ export default function About() {
             />
           </div>
 
-          {/* ================= LEFT ================= */}
+          {/* LEFT */}
           <motion.div
             variants={stagger}
             initial="hidden"
@@ -200,22 +202,20 @@ export default function About() {
             viewport={{ once: true }}
             className="space-y-16"
           >
-            {/* WHO WE ARE */}
             <div>
               <motion.h3 variants={fadeUp} className="text-xl font-bold mb-4">
                 Who We Are
               </motion.h3>
               <motion.p variants={fadeUp} className="text-lg text-gray-700 mb-4">
-                NEXGEN 9 IT Solutions was founded with a single focus — building
-                dependable digital systems that scale as businesses evolve.
+                NEXGEN 9 IT Solutions exists to build dependable digital
+                foundations for modern businesses.
               </motion.p>
               <motion.p variants={fadeUp} className="text-gray-600">
-                We believe great technology starts with strong foundations,
-                thoughtful architecture, and long-term collaboration.
+                We focus on long-term value, thoughtful architecture, and
+                partnerships that last.
               </motion.p>
             </div>
 
-            {/* NEW: HOW WE WORK */}
             <div>
               <motion.h3 variants={fadeUp} className="text-xl font-bold mb-6">
                 How We Work
@@ -223,9 +223,9 @@ export default function About() {
 
               <div className="space-y-5">
                 {[
-                  ["🧠", "Understand", "We begin by deeply understanding your goals, challenges, and users."],
-                  ["🛠️", "Build", "We design and develop solutions with scalability and reliability in mind."],
-                  ["🚀", "Deliver & Support", "We deploy, monitor, and continuously improve your systems."],
+                  ["🧠", "Discover", "We listen deeply to understand goals, risks, and users."],
+                  ["🛠️", "Build", "We engineer scalable, secure, and maintainable systems."],
+                  ["🚀", "Launch & Evolve", "We deploy, monitor, and continuously improve."],
                 ].map(([icon, title, desc], i) => (
                   <motion.div
                     key={i}
@@ -242,18 +242,17 @@ export default function About() {
               </div>
             </div>
 
-            {/* STATS */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
               {[
                 { value: <CountUp end={yearsActive} />, label: "Years Active" },
-                { value: <CountUp end={5} suffix="+" />, label: "Ongoing Projects" },
+                { value: <CountUp end={5} suffix="+" />, label: "Active Projects" },
                 { value: "Growing", label: "Clients & Partners" },
               ].map((item, i) => (
                 <motion.div
                   key={i}
                   variants={fadeUp}
                   className="bg-white border border-gray-100
-                             rounded-2xl p-6 shadow-sm hover:shadow-md transition"
+                             rounded-2xl p-6 shadow-md hover:shadow-lg transition"
                 >
                   <h4 className="text-3xl font-bold text-horizon-orange mb-1">
                     {item.value}
@@ -266,7 +265,7 @@ export default function About() {
             </div>
           </motion.div>
 
-          {/* ================= RIGHT ================= */}
+          {/* RIGHT */}
           <motion.div
             variants={stagger}
             initial="hidden"
@@ -282,11 +281,16 @@ export default function About() {
               <div className="space-y-6">
                 {[
                   ["2025", "Company Founded"],
-                  ["2026", "Enterprise Projects Delivered"],
-                  ["2027", "Expansion & Partnerships"],
+                  ["2026", "Enterprise Solutions Delivered"],
+                  ["2027", "Regional Expansion"],
                 ].map(([year, title], i) => (
                   <motion.div key={i} variants={fadeUp} className="flex gap-4">
-                    <span className="w-3 h-3 mt-2 bg-horizon-orange rounded-full" />
+                    <motion.span
+                      className="w-3 h-3 mt-2 bg-horizon-orange rounded-full"
+                      initial={{ scale: 0 }}
+                      whileInView={{ scale: 1 }}
+                      transition={{ delay: 0.1 * i }}
+                    />
                     <div>
                       <p className="text-sm font-bold">{year}</p>
                       <p className="text-gray-600">{title}</p>
