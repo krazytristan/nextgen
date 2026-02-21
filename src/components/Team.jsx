@@ -76,6 +76,12 @@ const devTeam1 = [
     image: "/team/charles.jpg",
     linkedin: "https://linkedin.com",
   },
+    {
+    name: "Bejay Allen G. Macatangay",
+    role: "Chief Finacial Officer",
+    image: "/team/bejay.jpg",
+    linkedin: "https://linkedin.com",
+  },
 ];
 
 const devTeam2 = [
