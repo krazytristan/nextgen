@@ -16,16 +16,16 @@ const yearsActive = Math.max(
 
 /* ================= ANIMATIONS ================= */
 const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
+  hidden: { opacity: 0, y: 28 },
   show: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] },
+    transition: { duration: 0.75, ease: [0.22, 1, 0.36, 1] },
   },
 };
 
 const stagger = {
-  show: { transition: { staggerChildren: 0.15 } },
+  show: { transition: { staggerChildren: 0.18 } },
 };
 
 /* ================= COUNT UP ================= */
@@ -42,7 +42,7 @@ function CountUp({ end, suffix = "" }) {
     }
 
     let current = 0;
-    const duration = 900;
+    const duration = 1000;
     const step = 16;
     const increment = end / (duration / step || 1);
 
@@ -77,31 +77,33 @@ function FlipCard({ icon, title, desc }) {
       onClick={() => setFlipped((v) => !v)}
       whileHover={
         !reduceMotion
-          ? { rotateX: -6, rotateY: 6, scale: 1.02 }
+          ? { rotateX: -5, rotateY: 5, scale: 1.03 }
           : {}
       }
-      transition={{ type: "spring", stiffness: 160, damping: 16 }}
-      className="relative h-48 w-full text-left focus:outline-none"
+      transition={{ type: "spring", stiffness: 150, damping: 15 }}
+      className="relative h-52 w-full text-left focus:outline-none"
       style={{ perspective: 1200 }}
       aria-pressed={flipped}
     >
       <motion.div
         animate={{ rotateY: flipped ? 180 : 0 }}
-        transition={{ duration: 0.6, ease: "easeInOut" }}
+        transition={{ duration: 0.65, ease: "easeInOut" }}
         className="absolute inset-0"
         style={{ transformStyle: "preserve-3d" }}
       >
         {/* FRONT */}
         <div
           className="absolute inset-0 bg-white border border-gray-100
-                     rounded-2xl p-6 shadow-md
+                     rounded-3xl p-6 shadow-md
                      flex flex-col items-center justify-center text-center
-                     hover:shadow-lg transition"
+                     transition hover:shadow-xl"
           style={{ backfaceVisibility: "hidden" }}
         >
           <div className="text-4xl mb-3">{icon}</div>
-          <h4 className="font-semibold tracking-tight">{title}</h4>
-          <span className="mt-2 text-xs text-gray-400">
+          <h4 className="font-semibold text-base sm:text-lg tracking-tight">
+            {title}
+          </h4>
+          <span className="mt-2 text-xs text-gray-400 tracking-wide">
             Tap to explore
           </span>
         </div>
@@ -110,14 +112,14 @@ function FlipCard({ icon, title, desc }) {
         <div
           className="absolute inset-0 bg-gradient-to-br
                      from-horizon-orange to-horizon-yellow
-                     text-white rounded-2xl p-6 shadow-lg
+                     text-white rounded-3xl p-6 shadow-xl
                      flex items-center justify-center text-center"
           style={{
             transform: "rotateY(180deg)",
             backfaceVisibility: "hidden",
           }}
         >
-          <p className="text-sm leading-relaxed font-medium">
+          <p className="text-sm sm:text-base leading-relaxed font-medium">
             {desc}
           </p>
         </div>
@@ -130,10 +132,9 @@ export default function About() {
   const sectionRef = useRef(null);
   const reduceMotion = useReducedMotion();
 
-  /* ================= TIMELINE LINE ================= */
   const { scrollYProgress } = useScroll({
     target: sectionRef,
-    offset: ["start 80%", "end 40%"],
+    offset: ["start 85%", "end 40%"],
   });
 
   const lineScale = useTransform(scrollYProgress, [0, 1], [0, 1]);
@@ -149,10 +150,10 @@ export default function About() {
     <section
       ref={sectionRef}
       id="about"
-      className="relative py-24 sm:py-28 lg:py-36
+      className="relative py-24 sm:py-32 lg:py-40
                  bg-gradient-to-b from-white via-horizon-yellow/10 to-white"
     >
-      <div className="container relative">
+      <div className="max-w-[1280px] mx-auto px-6 sm:px-10 lg:px-16 relative">
 
         {/* HEADER */}
         <motion.div
@@ -160,7 +161,7 @@ export default function About() {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true }}
-          className="max-w-3xl mb-24"
+          className="max-w-3xl mb-20"
         >
           <span className="inline-flex items-center gap-2 mb-6 px-6 py-2
                            rounded-full bg-horizon-orange/10
@@ -168,7 +169,7 @@ export default function About() {
             🚀 Established September 25, 2025
           </span>
 
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl
+          <h2 className="text-[28px] sm:text-[36px] lg:text-[44px]
                          font-extrabold leading-tight mb-6">
             About{" "}
             <span className="bg-gradient-to-r from-horizon-orange to-horizon-yellow
@@ -177,14 +178,14 @@ export default function About() {
             </span>
           </h2>
 
-          <p className="text-gray-600 text-base sm:text-lg">
+          <p className="text-gray-600 text-[16px] sm:text-[17px] lg:text-[18px] leading-relaxed">
             We design future-ready IT systems that help organizations move faster,
             scale smarter, and operate with confidence.
           </p>
         </motion.div>
 
         {/* TWO COLUMNS */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 relative">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 relative">
 
           {/* TIMELINE LINE */}
           <div className="hidden lg:block absolute left-1/2 top-0 h-full w-px bg-gray-100">
@@ -200,28 +201,28 @@ export default function About() {
             initial="hidden"
             whileInView="show"
             viewport={{ once: true }}
-            className="space-y-16"
+            className="space-y-14"
           >
             <div>
-              <motion.h3 variants={fadeUp} className="text-xl font-bold mb-4">
+              <motion.h3 variants={fadeUp} className="text-lg sm:text-xl font-bold mb-4">
                 Who We Are
               </motion.h3>
-              <motion.p variants={fadeUp} className="text-lg text-gray-700 mb-4">
+              <motion.p variants={fadeUp} className="text-gray-700 text-[16px] leading-relaxed mb-4">
                 NEXGEN 9 IT Solutions exists to build dependable digital
                 foundations for modern businesses.
               </motion.p>
-              <motion.p variants={fadeUp} className="text-gray-600">
+              <motion.p variants={fadeUp} className="text-gray-600 text-[16px] leading-relaxed">
                 We focus on long-term value, thoughtful architecture, and
                 partnerships that last.
               </motion.p>
             </div>
 
             <div>
-              <motion.h3 variants={fadeUp} className="text-xl font-bold mb-6">
+              <motion.h3 variants={fadeUp} className="text-lg sm:text-xl font-bold mb-6">
                 How We Work
               </motion.h3>
 
-              <div className="space-y-5">
+              <div className="space-y-6">
                 {[
                   ["🧠", "Discover", "We listen deeply to understand goals, risks, and users."],
                   ["🛠️", "Build", "We engineer scalable, secure, and maintainable systems."],
@@ -252,9 +253,9 @@ export default function About() {
                   key={i}
                   variants={fadeUp}
                   className="bg-white border border-gray-100
-                             rounded-2xl p-6 shadow-md hover:shadow-lg transition"
+                             rounded-3xl p-6 shadow-md hover:shadow-xl transition"
                 >
-                  <h4 className="text-3xl font-bold text-horizon-orange mb-1">
+                  <h4 className="text-3xl font-bold text-horizon-orange mb-2">
                     {item.value}
                   </h4>
                   <p className="text-xs tracking-widest text-gray-500 uppercase">
@@ -271,10 +272,10 @@ export default function About() {
             initial="hidden"
             whileInView="show"
             viewport={{ once: true }}
-            className="space-y-14 lg:sticky lg:top-28"
+            className="space-y-14 lg:sticky lg:top-32"
           >
             <div>
-              <motion.h3 variants={fadeUp} className="text-xl font-bold mb-6">
+              <motion.h3 variants={fadeUp} className="text-lg sm:text-xl font-bold mb-6">
                 Our Journey
               </motion.h3>
 
@@ -306,6 +307,7 @@ export default function About() {
               ))}
             </div>
           </motion.div>
+
         </div>
       </div>
     </section>
