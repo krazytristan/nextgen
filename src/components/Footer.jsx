@@ -44,7 +44,7 @@ export default function Footer() {
                 N9
               </div>
               <h4 className="font-bold text-xl">
-                NEXTGEN 9 IT SOLUTIONS
+                NEXTGEN IT SOLUTIONS
               </h4>
             </div>
 

@@ -1,3 +1,5 @@
+'use client';
+
 import { motion, useReducedMotion } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
 
@@ -68,10 +70,14 @@ const services = [
   },
 ];
 
+/* ================= MAIN ================= */
+
 export default function Services() {
   const reduceMotion = useReducedMotion();
   const containerRef = useRef(null);
+
   const [paused, setPaused] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(null);
 
   /* ================= AUTO SCROLL ================= */
   useEffect(() => {
@@ -107,10 +113,10 @@ export default function Services() {
       className="relative py-24 sm:py-32 lg:py-40 overflow-hidden
                  bg-gradient-to-b from-white via-horizon-yellow/30 to-white"
     >
-      <div className="max-w-[1280px] mx-auto px-6 sm:px-10 lg:px-16 relative">
+      <div className="max-w-[1280px] mx-auto px-6 sm:px-10 lg:px-16">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-14 lg:gap-20">
 
-          {/* ================= LEFT INTRO ================= */}
+          {/* ================= LEFT ================= */}
           <div className="lg:col-span-4">
             <div className="lg:sticky lg:top-36">
               <span className="inline-block mb-5 px-5 py-2 rounded-full
@@ -134,12 +140,14 @@ export default function Services() {
             </div>
           </div>
 
-          {/* ================= RIGHT — SWIPE LIST ================= */}
+          {/* ================= RIGHT ================= */}
           <div className="lg:col-span-8">
             <div className="relative h-[520px] sm:h-[560px] overflow-hidden">
 
-              {/* FADE MASKS */}
+              {/* FADE TOP */}
               <div className="pointer-events-none absolute top-0 left-0 w-full h-24 bg-gradient-to-b from-white to-transparent z-10" />
+
+              {/* FADE BOTTOM */}
               <div className="pointer-events-none absolute bottom-0 left-0 w-full h-28 bg-gradient-to-t from-white to-transparent z-10" />
 
               <motion.div
@@ -158,40 +166,52 @@ export default function Services() {
                   scrollbarWidth: "none",
                 }}
               >
+
                 <div className="space-y-6 pb-28">
+
                   {[...services, ...services].map((service, i) => (
                     <motion.div
                       key={i}
-                      whileHover={
-                        !reduceMotion
-                          ? { scale: 1.02, y: -4 }
-                          : {}
-                      }
-                      transition={{ type: "spring", stiffness: 220, damping: 22 }}
-                      className="group relative flex gap-6
-                                 bg-white/80 backdrop-blur-xl
-                                 rounded-[2.2rem] p-7 sm:p-8
-                                 shadow-[0_20px_50px_rgba(0,0,0,0.08)]
-                                 border border-white/50"
+                      initial={{ opacity: 0, y: 40 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: i * 0.03 }}
+                      whileHover={!reduceMotion ? { scale: 1.04, y: -6 } : {}}
+                      onHoverStart={() => setActiveIndex(i)}
+                      onHoverEnd={() => setActiveIndex(null)}
+                      className={`group relative flex gap-6
+                        bg-white/80 backdrop-blur-2xl
+                        rounded-[2.2rem] p-7 sm:p-8
+                        border border-white/50
+                        transition-all duration-300
+                        ${
+                          activeIndex === i
+                            ? "shadow-[0_30px_80px_rgba(0,0,0,0.15)]"
+                            : "shadow-[0_20px_50px_rgba(0,0,0,0.08)]"
+                        }`}
                     >
-                      {/* ACCENT STRIP */}
+
+                      {/* ACCENT LINE */}
                       <div
                         className={`absolute left-0 top-0 h-full w-1.5
-                                    rounded-l-[2.2rem]
-                                    bg-gradient-to-b ${service.accent}`}
+                        rounded-l-[2.2rem]
+                        bg-gradient-to-b ${service.accent}`}
                       />
 
                       {/* ICON */}
-                      <div className="flex-shrink-0">
+                      <motion.div
+                        whileHover={{ scale: 1.2 }}
+                        className="flex-shrink-0"
+                      >
                         <div
                           className={`w-14 h-14 rounded-2xl
-                                      bg-gradient-to-br ${service.accent}
-                                      text-white flex items-center
-                                      justify-center text-2xl shadow-md`}
+                          bg-gradient-to-br ${service.accent}
+                          text-white flex items-center
+                          justify-center text-2xl shadow-lg`}
                         >
                           {service.icon}
                         </div>
-                      </div>
+                      </motion.div>
 
                       {/* CONTENT */}
                       <div className="flex-1">
@@ -205,26 +225,32 @@ export default function Services() {
                           {service.desc}
                         </p>
 
+                        {/* TAGS */}
                         <div className="flex flex-wrap gap-2">
                           {service.tags.map((tag, t) => (
-                            <span
+                            <motion.span
                               key={t}
-                              className="px-3 py-1 rounded-full
-                                         text-xs bg-gray-100 text-gray-600
-                                         tracking-wide"
+                              whileHover={{ scale: 1.1 }}
+                              className="px-3 py-1.5 rounded-full
+                                         text-xs bg-gray-100/80
+                                         text-gray-600 backdrop-blur
+                                         border border-gray-200/50"
                             >
                               {tag}
-                            </span>
+                            </motion.span>
                           ))}
                         </div>
                       </div>
+
                     </motion.div>
                   ))}
+
                 </div>
               </motion.div>
 
             </div>
           </div>
+
         </div>
       </div>
     </section>

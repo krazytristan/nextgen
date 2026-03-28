@@ -1,3 +1,5 @@
+'use client';
+
 import {
   motion,
   useInView,
@@ -5,14 +7,34 @@ import {
   useScroll,
   useTransform,
 } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 
-/* ================= DATE LOGIC ================= */
-const START_DATE = new Date("2025-09-25");
-const yearsActive = Math.max(
-  0,
-  new Date().getFullYear() - START_DATE.getFullYear()
-);
+/* ================= ICONS ================= */
+const Icons = {
+  Target: () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+      <circle cx="12" cy="12" r="10"/>
+      <circle cx="12" cy="12" r="6"/>
+      <circle cx="12" cy="12" r="2"/>
+    </svg>
+  ),
+  Shield: () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+    </svg>
+  ),
+  Zap: () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+    </svg>
+  ),
+  Users: () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+      <circle cx="9" cy="7" r="4"/>
+    </svg>
+  ),
+};
 
 /* ================= ANIMATIONS ================= */
 const fadeUp = {
@@ -20,117 +42,57 @@ const fadeUp = {
   show: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.75, ease: [0.22, 1, 0.36, 1] },
+    transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] },
   },
 };
 
 const stagger = {
-  show: { transition: { staggerChildren: 0.18 } },
+  show: { transition: { staggerChildren: 0.12 } },
 };
 
-/* ================= COUNT UP ================= */
+/* ================= COUNT ================= */
 function CountUp({ end, suffix = "" }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
-  const reduceMotion = useReducedMotion();
   const [count, setCount] = useState(0);
 
   useEffect(() => {
-    if (!isInView || reduceMotion) {
-      setCount(end);
-      return;
-    }
+    if (!isInView) return;
+    const start = performance.now();
+    const animate = (t) => {
+      const progress = Math.min((t - start) / 1200, 1);
+      setCount(Math.floor(progress * end));
+      if (progress < 1) requestAnimationFrame(animate);
+    };
+    requestAnimationFrame(animate);
+  }, [isInView, end]);
 
-    let current = 0;
-    const duration = 1000;
-    const step = 16;
-    const increment = end / (duration / step || 1);
-
-    const timer = setInterval(() => {
-      current += increment;
-      if (current >= end) {
-        setCount(end);
-        clearInterval(timer);
-      } else {
-        setCount(Math.floor(current));
-      }
-    }, step);
-
-    return () => clearInterval(timer);
-  }, [isInView, end, reduceMotion]);
-
-  return (
-    <span ref={ref}>
-      {count}
-      {suffix}
-    </span>
-  );
+  return <span ref={ref}>{count}{suffix}</span>;
 }
 
-/* ================= FLIP + TILT CARD ================= */
-function FlipCard({ icon, title, desc }) {
-  const [flipped, setFlipped] = useState(false);
-  const reduceMotion = useReducedMotion();
-
+/* ================= VALUE CARD ================= */
+function ValueCard({ title, desc, icon: Icon }) {
   return (
-    <motion.button
-      onClick={() => setFlipped((v) => !v)}
-      whileHover={
-        !reduceMotion
-          ? { rotateX: -5, rotateY: 5, scale: 1.03 }
-          : {}
-      }
-      transition={{ type: "spring", stiffness: 150, damping: 15 }}
-      className="relative h-52 w-full text-left focus:outline-none"
-      style={{ perspective: 1200 }}
-      aria-pressed={flipped}
+    <motion.div
+      variants={fadeUp}
+      whileHover={{ y: -6 }}
+      className="relative rounded-3xl p-6 bg-white/80 backdrop-blur-xl border border-white/40 shadow-xl"
     >
-      <motion.div
-        animate={{ rotateY: flipped ? 180 : 0 }}
-        transition={{ duration: 0.65, ease: "easeInOut" }}
-        className="absolute inset-0"
-        style={{ transformStyle: "preserve-3d" }}
-      >
-        {/* FRONT */}
-        <div
-          className="absolute inset-0 bg-white border border-gray-100
-                     rounded-3xl p-6 shadow-md
-                     flex flex-col items-center justify-center text-center
-                     transition hover:shadow-xl"
-          style={{ backfaceVisibility: "hidden" }}
-        >
-          <div className="text-4xl mb-3">{icon}</div>
-          <h4 className="font-semibold text-base sm:text-lg tracking-tight">
-            {title}
-          </h4>
-          <span className="mt-2 text-xs text-gray-400 tracking-wide">
-            Tap to explore
-          </span>
-        </div>
-
-        {/* BACK */}
-        <div
-          className="absolute inset-0 bg-gradient-to-br
-                     from-horizon-orange to-horizon-yellow
-                     text-white rounded-3xl p-6 shadow-xl
-                     flex items-center justify-center text-center"
-          style={{
-            transform: "rotateY(180deg)",
-            backfaceVisibility: "hidden",
-          }}
-        >
-          <p className="text-sm sm:text-base leading-relaxed font-medium">
-            {desc}
-          </p>
-        </div>
-      </motion.div>
-    </motion.button>
+      <div className="text-horizon-orange mb-4"><Icon /></div>
+      <h4 className="font-semibold text-lg mb-2 text-gray-900">{title}</h4>
+      <p className="text-gray-600 text-sm">{desc}</p>
+    </motion.div>
   );
 }
 
 export default function About() {
   const sectionRef = useRef(null);
   const reduceMotion = useReducedMotion();
+  const START_DATE = new Date("2025-09-25");
+
+  const yearsActive = useMemo(() => {
+    return Math.max(0, new Date().getFullYear() - START_DATE.getFullYear());
+  }, []);
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -140,172 +102,124 @@ export default function About() {
   const lineScale = useTransform(scrollYProgress, [0, 1], [0, 1]);
 
   const values = [
-    { icon: "🎯", title: "Mission", desc: "Build secure, scalable, and resilient digital solutions that empower growth." },
-    { icon: "🌍", title: "Vision", desc: "Be a long-term technology partner trusted for quality and consistency." },
-    { icon: "💡", title: "Innovation", desc: "Create systems today that remain relevant tomorrow." },
-    { icon: "🤝", title: "Commitment", desc: "Operate with transparency, accountability, and care." },
+    { title: "Mission", desc: "Deliver scalable and secure IT solutions that drive business growth.", icon: Icons.Target },
+    { title: "Vision", desc: "To become a leading provider of innovative and future-ready IT services.", icon: Icons.Zap },
+    { title: "Innovation", desc: "We continuously adapt and integrate modern technologies.", icon: Icons.Shield },
+    { title: "Commitment", desc: "Dedicated to quality, transparency, and long-term partnerships.", icon: Icons.Users },
   ];
 
   return (
     <section
       ref={sectionRef}
       id="about"
-      className="relative py-24 sm:py-32 lg:py-40
-                 bg-gradient-to-b from-white via-horizon-yellow/10 to-white"
+      className="relative py-24 sm:py-32 lg:py-40 overflow-hidden"
     >
-      <div className="max-w-[1280px] mx-auto px-6 sm:px-10 lg:px-16 relative">
+
+      {/* 🔥 IMAGE BACKGROUND */}
+      <div className="absolute inset-0 z-0">
+        <img
+          src="/bg-tech.png"
+          alt="background"
+          className="w-full h-full object-cover"
+        />
+
+        {/* DARK OVERLAY */}
+        <div className="absolute inset-0 bg-white/90 backdrop-blur-sm" />
+
+        {/* GLOW */}
+        <div className="absolute -top-32 -left-32 w-[500px] h-[500px] bg-horizon-orange/20 blur-[120px]" />
+        <div className="absolute -bottom-32 -right-32 w-[500px] h-[500px] bg-horizon-yellow/20 blur-[120px]" />
+
+        {/* GRID */}
+        <div
+          className="absolute inset-0 opacity-[0.04]"
+          style={{
+            backgroundImage: `
+              linear-gradient(to right, #000 1px, transparent 1px),
+              linear-gradient(to bottom, #000 1px, transparent 1px)
+            `,
+            backgroundSize: "40px 40px",
+          }}
+        />
+      </div>
+
+      {/* CONTENT */}
+      <div className="relative z-10 max-w-[1280px] mx-auto px-6 sm:px-10 lg:px-16">
 
         {/* HEADER */}
-        <motion.div
-          variants={fadeUp}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true }}
-          className="max-w-3xl mb-20"
-        >
-          <span className="inline-flex items-center gap-2 mb-6 px-6 py-2
-                           rounded-full bg-horizon-orange/10
-                           text-horizon-orange text-sm font-semibold">
-            🚀 Established September 25, 2025
+        <motion.div variants={fadeUp} initial="hidden" whileInView="show" className="max-w-3xl mb-20">
+          <span className="text-horizon-orange font-semibold text-sm">
+            Established September 25, 2025
           </span>
 
-          <h2 className="text-[28px] sm:text-[36px] lg:text-[44px]
-                         font-extrabold leading-tight mb-6">
-            About{" "}
-            <span className="bg-gradient-to-r from-horizon-orange to-horizon-yellow
-                             bg-clip-text text-transparent">
-              NEXGEN 9 IT Solutions
-            </span>
+          <h2 className="text-[40px] font-extrabold mt-4 mb-6">
+            About <span className="text-horizon-orange">NEXGEN IT Solutions</span>
           </h2>
 
-          <p className="text-gray-600 text-[16px] sm:text-[17px] lg:text-[18px] leading-relaxed">
-            We design future-ready IT systems that help organizations move faster,
-            scale smarter, and operate with confidence.
+          <p className="text-gray-700 leading-relaxed">
+            NEXGEN IT Solutions is dedicated to delivering cutting-edge digital solutions that empower businesses to thrive in a fast-evolving technological landscape. We specialize in building scalable systems, cloud-based infrastructure, and innovative applications that enhance efficiency, security, and long-term growth.
+          </p>
+
+          <p className="text-gray-600 mt-4 leading-relaxed">
+            Our team focuses on combining strategic planning, advanced engineering, and continuous support to ensure every solution we deliver remains relevant, reliable, and future-ready.
           </p>
         </motion.div>
 
-        {/* TWO COLUMNS */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 relative">
+        {/* GRID */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 relative">
 
-          {/* TIMELINE LINE */}
-          <div className="hidden lg:block absolute left-1/2 top-0 h-full w-px bg-gray-100">
+          {/* TIMELINE */}
+          <div className="hidden lg:block absolute left-1/2 top-0 h-full w-px bg-gray-300">
             <motion.div
-              className="absolute top-0 left-0 w-full bg-horizon-orange origin-top"
+              className="absolute top-0 w-full bg-horizon-orange"
               style={{ scaleY: reduceMotion ? 1 : lineScale }}
             />
           </div>
 
           {/* LEFT */}
-          <motion.div
-            variants={stagger}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true }}
-            className="space-y-14"
-          >
-            <div>
-              <motion.h3 variants={fadeUp} className="text-lg sm:text-xl font-bold mb-4">
-                Who We Are
-              </motion.h3>
-              <motion.p variants={fadeUp} className="text-gray-700 text-[16px] leading-relaxed mb-4">
-                NEXGEN 9 IT Solutions exists to build dependable digital
-                foundations for modern businesses.
-              </motion.p>
-              <motion.p variants={fadeUp} className="text-gray-600 text-[16px] leading-relaxed">
-                We focus on long-term value, thoughtful architecture, and
-                partnerships that last.
-              </motion.p>
-            </div>
+          <motion.div variants={stagger} initial="hidden" whileInView="show" className="space-y-16">
 
             <div>
-              <motion.h3 variants={fadeUp} className="text-lg sm:text-xl font-bold mb-6">
-                How We Work
-              </motion.h3>
+              <h3 className="text-xl font-bold mb-6">Our Approach</h3>
 
-              <div className="space-y-6">
-                {[
-                  ["🧠", "Discover", "We listen deeply to understand goals, risks, and users."],
-                  ["🛠️", "Build", "We engineer scalable, secure, and maintainable systems."],
-                  ["🚀", "Launch & Evolve", "We deploy, monitor, and continuously improve."],
-                ].map(([icon, title, desc], i) => (
-                  <motion.div
-                    key={i}
-                    variants={fadeUp}
-                    className="flex gap-4 items-start"
-                  >
-                    <span className="text-2xl">{icon}</span>
-                    <div>
-                      <p className="font-semibold">{title}</p>
-                      <p className="text-gray-600 text-sm">{desc}</p>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
               {[
-                { value: <CountUp end={yearsActive} />, label: "Years Active" },
-                { value: <CountUp end={5} suffix="+" />, label: "Active Projects" },
-                { value: "Growing", label: "Clients & Partners" },
+                { t: "Strategy", d: "Aligning IT solutions with business goals." },
+                { t: "Engineering", d: "Building robust and scalable systems." },
+                { t: "Maintenance", d: "Ensuring continuous optimization and support." },
               ].map((item, i) => (
-                <motion.div
-                  key={i}
-                  variants={fadeUp}
-                  className="bg-white border border-gray-100
-                             rounded-3xl p-6 shadow-md hover:shadow-xl transition"
-                >
-                  <h4 className="text-3xl font-bold text-horizon-orange mb-2">
-                    {item.value}
-                  </h4>
-                  <p className="text-xs tracking-widest text-gray-500 uppercase">
-                    {item.label}
-                  </p>
+                <motion.div key={i} variants={fadeUp} className="flex gap-4 mb-6">
+                  <div className="w-8 h-8 bg-horizon-orange/10 text-horizon-orange flex items-center justify-center rounded-full font-bold">
+                    0{i + 1}
+                  </div>
+                  <div>
+                    <p className="font-semibold">{item.t}</p>
+                    <p className="text-sm text-gray-600">{item.d}</p>
+                  </div>
                 </motion.div>
               ))}
             </div>
-          </motion.div>
 
-          {/* RIGHT */}
-          <motion.div
-            variants={stagger}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true }}
-            className="space-y-14 lg:sticky lg:top-32"
-          >
-            <div>
-              <motion.h3 variants={fadeUp} className="text-lg sm:text-xl font-bold mb-6">
-                Our Journey
-              </motion.h3>
-
-              <div className="space-y-6">
-                {[
-                  ["2025", "Company Founded"],
-                  ["2026", "Enterprise Solutions Delivered"],
-                  ["2027", "Regional Expansion"],
-                ].map(([year, title], i) => (
-                  <motion.div key={i} variants={fadeUp} className="flex gap-4">
-                    <motion.span
-                      className="w-3 h-3 mt-2 bg-horizon-orange rounded-full"
-                      initial={{ scale: 0 }}
-                      whileInView={{ scale: 1 }}
-                      transition={{ delay: 0.1 * i }}
-                    />
-                    <div>
-                      <p className="text-sm font-bold">{year}</p>
-                      <p className="text-gray-600">{title}</p>
-                    </div>
-                  </motion.div>
-                ))}
+            {/* STATS */}
+            <div className="grid grid-cols-3 gap-4">
+              <div className="bg-white/80 p-5 rounded-xl text-center backdrop-blur">
+                <CountUp end={yearsActive} />
+                <p className="text-xs">Years</p>
+              </div>
+              <div className="bg-white/80 p-5 rounded-xl text-center backdrop-blur">
+                <CountUp end={10} suffix="+" />
+                <p className="text-xs">Solutions</p>
+              </div>
+              <div className="bg-white/80 p-5 rounded-xl text-center backdrop-blur">
+                Growing
+                <p className="text-xs">Clients</p>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {values.map((v, i) => (
-                <FlipCard key={i} {...v} />
-              ))}
-            </div>
+          </motion.div>
+
+          {/* RIGHT */}
+          <motion.div variants={stagger} initial="hidden" whileInView="show" className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {values.map((v, i) => <ValueCard key={i} {...v} />)}
           </motion.div>
 
         </div>
