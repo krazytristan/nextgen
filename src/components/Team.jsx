@@ -136,35 +136,48 @@ export default function Team() {
 
   return (
     <>
-      {/* ================= SECTION WITH BG IMAGE ================= */}
+      {/* ================= ULTRA PREMIUM SECTION ================= */}
       <section
-        className="relative py-28 bg-cover bg-center bg-no-repeat"
+        className="relative py-32 bg-fixed bg-cover bg-center"
         style={{ backgroundImage: "url('/team/team.png')" }}
       >
-        {/* OVERLAY */}
-        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+        {/* GRADIENT OVERLAY */}
+        <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/60 to-orange-900/40"></div>
 
         <div className="relative z-10 container mx-auto px-6">
 
           {/* HEADER */}
-          <div className="text-center max-w-2xl mx-auto mb-20">
-            <h2 className="text-4xl md:text-5xl font-extrabold text-white">
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center max-w-3xl mx-auto mb-24"
+          >
+            <h2 className="text-5xl md:text-6xl font-extrabold text-white">
               Our <span className="text-orange-400">Teams</span>
             </h2>
 
-            <p className="mt-4 text-gray-200 text-lg leading-relaxed">
-              Our team is composed of passionate innovators, skilled developers, and creative thinkers 
-              dedicated to building high-quality digital solutions. We collaborate to create 
-              efficient, user-centered systems that drive innovation and real-world impact.
+            <p className="mt-6 text-gray-200 text-lg leading-relaxed">
+              Our team is composed of passionate innovators, skilled developers, 
+              and creative thinkers dedicated to building high-quality digital 
+              solutions that create real-world impact.
             </p>
-          </div>
+          </motion.div>
 
           {/* TEAM GRID */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {teams.map((team) => (
-              <TeamCard key={team.name} team={team} onClick={setSelectedTeam} />
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
+            {teams.map((team, i) => (
+              <motion.div
+                key={team.name}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1 }}
+              >
+                <TeamCard team={team} onClick={setSelectedTeam} />
+              </motion.div>
             ))}
           </div>
+
         </div>
       </section>
 
@@ -172,12 +185,15 @@ export default function Team() {
       <AnimatePresence>
         {selectedTeam && (
           <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-xl"
             onClick={() => setSelectedTeam(null)}
           >
             <motion.div
               onClick={(e) => e.stopPropagation()}
-              className="bg-white rounded-3xl max-w-4xl w-full p-8 shadow-2xl"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white/90 backdrop-blur-xl rounded-3xl max-w-5xl w-full p-10 shadow-2xl"
             >
               <button
                 onClick={() => setSelectedTeam(null)}
@@ -186,25 +202,25 @@ export default function Team() {
                 ✕ Close
               </button>
 
-              <h3 className="text-2xl font-bold mb-6">
+              <h3 className="text-3xl font-bold mb-8">
                 {selectedTeam.name}
               </h3>
 
-              <div className="grid md:grid-cols-2 gap-6 max-h-[450px] overflow-y-auto pr-2">
+              <div className="grid md:grid-cols-2 gap-8 max-h-[500px] overflow-y-auto pr-2">
                 {selectedTeam.members.map((m) => (
                   <div
                     key={m.name}
-                    className="text-center p-5 bg-gray-50 rounded-2xl hover:shadow-lg transition"
+                    className="text-center p-6 bg-white/70 rounded-2xl shadow hover:shadow-xl"
                   >
                     <div className="flex justify-center mb-4">
                       <img
                         src={m.image}
                         alt={m.name}
-                        className="w-24 h-32 object-cover rounded-xl shadow border"
+                        className="w-28 h-36 object-cover rounded-xl shadow-lg"
                       />
                     </div>
 
-                    <h4 className="font-semibold">{m.name}</h4>
+                    <h4 className="font-semibold text-lg">{m.name}</h4>
                     <p className="text-orange-500 text-sm">{m.role}</p>
                     <p className="text-gray-600 text-sm mt-2">
                       {m.description}
@@ -219,6 +235,7 @@ export default function Team() {
                   </div>
                 ))}
               </div>
+
             </motion.div>
           </motion.div>
         )}
@@ -232,19 +249,24 @@ export default function Team() {
 function TeamCard({ team, onClick }) {
   return (
     <motion.div
-      whileHover={{ scale: 1.05 }}
+      whileHover={{ scale: 1.05, y: -6 }}
       onClick={() => onClick(team)}
-      className="cursor-pointer rounded-3xl overflow-hidden shadow-xl group"
+      className="cursor-pointer rounded-3xl overflow-hidden group relative shadow-xl"
     >
-      <div className="relative h-60">
+      <div className="relative h-64">
+
         <img
           src={team.image}
-          className="w-full h-full object-cover group-hover:scale-110 transition"
+          className="w-full h-full object-cover group-hover:scale-110 transition duration-700"
         />
-        <div className="absolute inset-0 bg-black/60" />
+
+        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+
         <div className="absolute bottom-0 p-6 text-white">
           <h3 className="text-xl font-bold">{team.name}</h3>
+          <p className="text-sm opacity-80">Explore Team →</p>
         </div>
+
       </div>
     </motion.div>
   );
@@ -261,7 +283,7 @@ function Icon({ href, icon }) {
       onClick={(e) => disabled && e.preventDefault()}
       target="_blank"
       rel="noopener noreferrer"
-      className={`w-9 h-9 flex items-center justify-center rounded-full
+      className={`w-10 h-10 flex items-center justify-center rounded-full
         ${disabled
           ? "bg-gray-100 text-gray-300"
           : "bg-gray-100 hover:bg-orange-500 hover:text-white"}

@@ -56,7 +56,7 @@ export default function Hero() {
   const reduceMotion = useReducedMotion();
   const timerRef = useRef(null);
 
-  /* ================= AUTO SLIDE ================= */
+  /* AUTO SLIDE */
   useEffect(() => {
     if (isHovered) return;
 
@@ -72,12 +72,12 @@ export default function Hero() {
     clearInterval(timerRef.current);
   };
 
-  /* ================= PARALLAX ================= */
+  /* PARALLAX */
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
-  const bgX = useTransform(mouseX, [-0.5, 0.5], ["-10px", "10px"]);
-  const bgY = useTransform(mouseY, [-0.5, 0.5], ["-10px", "10px"]);
+  const bgX = useTransform(mouseX, [-0.5, 0.5], ["-12px", "12px"]);
+  const bgY = useTransform(mouseY, [-0.5, 0.5], ["-12px", "12px"]);
 
   const handleMouseMove = (e) => {
     if (window.innerWidth < 1024 || reduceMotion) return;
@@ -87,14 +87,12 @@ export default function Hero() {
     mouseY.set((e.clientY - rect.top) / rect.height - 0.5);
   };
 
-  /* ================= SERVICES FUNCTION ================= */
+  /* SERVICES */
   const goToServices = () => {
     const section = document.getElementById("services");
 
     if (section) {
       section.scrollIntoView({ behavior: "smooth" });
-
-      // ✨ highlight effect
       section.classList.add("ring-4", "ring-horizon-amber");
 
       setTimeout(() => {
@@ -135,7 +133,11 @@ export default function Hero() {
       <div className={`absolute inset-0 bg-gradient-to-r ${gradients[index % gradients.length]} z-0`} />
 
       {/* CONTENT */}
-      <div className="relative z-20 w-full px-6 lg:px-20 py-20">
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="relative z-20 w-full px-6 lg:px-20 py-20"
+      >
         <div className="max-w-[1280px] mx-auto grid lg:grid-cols-2 gap-12 items-center">
 
           {/* LEFT */}
@@ -151,7 +153,6 @@ export default function Hero() {
               to help organizations grow and operate efficiently.
             </p>
 
-            {/* ✅ ONLY SERVICES BUTTON */}
             <div className="mt-6 flex">
               <button
                 className="bg-horizon-amber text-black px-6 py-3 rounded-xl font-semibold hover:scale-105 hover:shadow-lg hover:shadow-horizon-amber/40 transition-all duration-300"
@@ -165,10 +166,11 @@ export default function Hero() {
           {/* RIGHT CARD */}
           <motion.div
             className="relative"
+            whileHover={{ scale: 1.02 }}
             animate={!reduceMotion ? { y: [0, -8, 0] } : {}}
             transition={{ duration: 6, repeat: Infinity }}
           >
-            <div className="relative rounded-3xl p-8 bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl">
+            <div className="relative rounded-3xl p-6 md:p-8 bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl">
 
               <AnimatePresence mode="wait">
                 <motion.div
@@ -180,7 +182,7 @@ export default function Hero() {
                   <h2 className="text-xl md:text-2xl font-semibold mb-3">
                     {slides[index].title}
                   </h2>
-                  <p className="text-white/80">
+                  <p className="text-white/80 text-sm md:text-base">
                     {slides[index].desc}
                   </p>
                 </motion.div>
@@ -214,12 +216,16 @@ export default function Hero() {
           </motion.div>
 
         </div>
-      </div>
+      </motion.div>
 
-      {/* TOOLS */}
-      <div className="relative z-20 mt-20 overflow-hidden">
-        <div className="py-6">
-          <div className="flex w-max animate-marquee gap-16 items-center">
+      {/* ✅ UPDATED TOOLS (INSIDE HERO + PREMIUM BAR) */}
+      <div className="absolute bottom-0 left-0 w-full z-20">
+        <div className="bg-black/40 backdrop-blur-md border-t border-white/10 py-4 overflow-hidden">
+          <motion.div
+            className="flex gap-16 text-xl w-max px-6"
+            animate={{ x: ["0%", "-50%"] }}
+            transition={{ repeat: Infinity, duration: 20, ease: "linear" }}
+          >
             {[...Array(2)].map((_, i) => (
               <div key={i} className="flex gap-16 text-2xl opacity-80">
                 <FaReact />
@@ -232,13 +238,12 @@ export default function Hero() {
                 <FaDocker />
               </div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </div>
 
-      {/* ✅ CHATBOT (FLOATING ONLY) */}
+      {/* CHATBOT */}
       <Chatbot />
-
     </section>
   );
 }
