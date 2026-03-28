@@ -1,172 +1,193 @@
+'use client';
+
 import {
   motion,
   AnimatePresence,
   useReducedMotion,
   useMotionValue,
   useTransform,
-  useScroll,
 } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 
+import {
+  FaReact,
+  FaNodeJs,
+  FaJs,
+  FaPhp,
+  FaLaravel,
+  FaPython,
+  FaAws,
+  FaDocker
+} from "react-icons/fa";
+
+/* ✅ CHATBOT */
+import Chatbot from "./Chatbot";
+
+/* ================= DATA ================= */
 const slides = [
   { title: "Web Systems", desc: "High-performance platforms engineered for scalability, reliability, and speed." },
-  { title: "System Development", desc: "Custom-built information systems tailored to streamline operations and improve efficiency." },
-  { title: "Cloud Solutions", desc: "Secure, flexible cloud infrastructure that evolves with your business." },
-  { title: "Mobile Applications", desc: "Cross-platform mobile apps designed for performance, usability, and growth." },
-  { title: "UI / UX Design", desc: "User-centered designs that create intuitive, engaging, and consistent digital experiences." },
-  { title: "IT Support", desc: "Proactive monitoring, maintenance, and expert technical assistance." },
-  { title: "Network & Infrastructure", desc: "Reliable network design, setup, and maintenance for secure connectivity." },
-  { title: "Cybersecurity", desc: "Modern security strategies to protect systems, data, and users." },
+  { title: "System Development", desc: "Custom-built systems to streamline operations." },
+  { title: "Cloud Solutions", desc: "Secure and flexible cloud infrastructure." },
+  { title: "Mobile Applications", desc: "Cross-platform apps built for performance." },
+  { title: "UI / UX Design", desc: "Modern, intuitive user experiences." },
+  { title: "IT Support", desc: "Reliable monitoring and expert assistance." },
+  { title: "Network & Infrastructure", desc: "Secure and scalable network systems." },
+  { title: "Cybersecurity", desc: "Advanced protection for systems and data." },
+];
+
+const bgImages = [
+  "/images/bg1.png",
+  "/images/bg2.png",
+  "/images/bg3.png",
+  "/images/bg4.png",
+];
+
+const gradients = [
+  "from-black/70 via-black/40 to-black/80",
+  "from-indigo-900/70 via-black/40 to-black/80",
+  "from-orange-900/70 via-black/40 to-black/80",
+  "from-purple-900/70 via-black/40 to-black/80",
 ];
 
 export default function Hero() {
   const [index, setIndex] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+
   const reduceMotion = useReducedMotion();
-  const timer = useRef(null);
-  const sectionRef = useRef(null);
+  const timerRef = useRef(null);
 
-  /* ================= CAROUSEL ================= */
-  const startCarousel = () => {
-    if (timer.current) clearInterval(timer.current);
-    timer.current = setInterval(() => {
-      setIndex((i) => (i + 1) % slides.length);
-    }, 5000);
-  };
-
+  /* ================= AUTO SLIDE ================= */
   useEffect(() => {
-    startCarousel();
-    return () => clearInterval(timer.current);
-  }, []);
+    if (isHovered) return;
 
-  /* ================= SCROLL FADE ================= */
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start start", "end start"],
-  });
+    timerRef.current = setInterval(() => {
+      setIndex((prev) => (prev + 1) % slides.length);
+    }, 5000);
 
-  const gridFade = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+    return () => clearInterval(timerRef.current);
+  }, [isHovered]);
+
+  const handleDotClick = (i) => {
+    setIndex(i);
+    clearInterval(timerRef.current);
+  };
 
   /* ================= PARALLAX ================= */
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
-  const bgX = useTransform(mouseX, [-0.5, 0.5], ["-4px", "4px"]);
-  const bgY = useTransform(mouseY, [-0.5, 0.5], ["-4px", "4px"]);
+  const bgX = useTransform(mouseX, [-0.5, 0.5], ["-10px", "10px"]);
+  const bgY = useTransform(mouseY, [-0.5, 0.5], ["-10px", "10px"]);
 
   const handleMouseMove = (e) => {
     if (window.innerWidth < 1024 || reduceMotion) return;
+
     const rect = e.currentTarget.getBoundingClientRect();
     mouseX.set((e.clientX - rect.left) / rect.width - 0.5);
     mouseY.set((e.clientY - rect.top) / rect.height - 0.5);
   };
 
+  /* ================= SERVICES FUNCTION ================= */
+  const goToServices = () => {
+    const section = document.getElementById("services");
+
+    if (section) {
+      section.scrollIntoView({ behavior: "smooth" });
+
+      // ✨ highlight effect
+      section.classList.add("ring-4", "ring-horizon-amber");
+
+      setTimeout(() => {
+        section.classList.remove("ring-4", "ring-horizon-amber");
+      }, 1500);
+    }
+  };
+
   return (
     <section
-      ref={sectionRef}
       id="home"
       onMouseMove={handleMouseMove}
-      className="relative w-full min-h-[100svh] flex items-center overflow-hidden
-                 bg-gradient-to-b from-[#8fb36b] to-[#6f8f55] text-white"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className="relative w-full min-h-[100svh] flex items-center overflow-hidden text-white"
     >
-      {/* Accent Line */}
-      <div className="absolute top-0 left-0 w-full h-[3px]
-                      bg-gradient-to-r from-horizon-orange via-horizon-amber to-transparent" />
 
-      {/* Animated Grid */}
-      <motion.div
-        aria-hidden
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          x: bgX,
-          y: bgY,
-          opacity: gridFade,
-          backgroundImage: `
-            linear-gradient(to right, rgba(255,255,255,0.15) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(255,255,255,0.15) 1px, transparent 1px)
-          `,
-          backgroundSize: "64px 64px",
-        }}
-        animate={
-          reduceMotion ? {} : { backgroundPosition: ["0px 0px", "64px 64px"] }
-        }
-        transition={{ duration: 150, ease: "linear", repeat: Infinity }}
-      />
+      {/* BACKGROUND */}
+      <div className="absolute inset-0 z-0 overflow-hidden">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={index}
+            className="absolute inset-0 bg-cover bg-center"
+            style={{
+              backgroundImage: `url(${bgImages[index % bgImages.length]})`,
+              x: bgX,
+              y: bgY
+            }}
+            initial={{ opacity: 0, scale: 1.1 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1 }}
+          />
+        </AnimatePresence>
+      </div>
 
-      <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/30" />
+      {/* GRADIENT */}
+      <div className={`absolute inset-0 bg-gradient-to-r ${gradients[index % gradients.length]} z-0`} />
 
       {/* CONTENT */}
-      <div className="relative z-10 w-full px-6 sm:px-10 lg:px-20 py-24">
-        <div className="max-w-[1280px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-14 lg:gap-20 items-center">
+      <div className="relative z-20 w-full px-6 lg:px-20 py-20">
+        <div className="max-w-[1280px] mx-auto grid lg:grid-cols-2 gap-12 items-center">
 
-          {/* LEFT SIDE */}
+          {/* LEFT */}
           <div>
-            <h1 className="font-extrabold leading-tight mb-6
-                           text-[32px] sm:text-[42px] lg:text-[56px]">
+            <h1 className="font-extrabold leading-tight text-4xl md:text-5xl lg:text-6xl mb-6">
               Next-Generation
-              <span className="block text-horizon-amber">
-                IT Solutions
-              </span>
+              <span className="block text-horizon-amber">IT Solutions</span>
               Built for Scale
             </h1>
 
-            <p className="text-white/85 leading-relaxed mb-8 max-w-2xl
-                          text-[16px] sm:text-[17px] lg:text-[18px]">
-              We architect, develop, and maintain secure digital ecosystems
-              that empower organizations to operate efficiently and scale
-              confidently in an evolving technological landscape.
+            <p className="text-white/80 text-lg max-w-xl">
+              We build secure, scalable, and high-performance systems
+              to help organizations grow and operate efficiently.
             </p>
+
+            {/* ✅ ONLY SERVICES BUTTON */}
+            <div className="mt-6 flex">
+              <button
+                className="bg-horizon-amber text-black px-6 py-3 rounded-xl font-semibold hover:scale-105 hover:shadow-lg hover:shadow-horizon-amber/40 transition-all duration-300"
+                onClick={goToServices}
+              >
+                View Services
+              </button>
+            </div>
           </div>
 
-          {/* RIGHT SIDE – PREMIUM GLASS */}
+          {/* RIGHT CARD */}
           <motion.div
-            className="relative mt-12 lg:mt-0"
-            animate={!reduceMotion ? { y: [0, -6, 0] } : {}}
+            className="relative"
+            animate={!reduceMotion ? { y: [0, -8, 0] } : {}}
             transition={{ duration: 6, repeat: Infinity }}
-            onMouseEnter={() => clearInterval(timer.current)}
-            onMouseLeave={startCarousel}
           >
-            {/* Glow Layer */}
-            <div className="absolute inset-0 rounded-[30px]
-                            bg-white/20 blur-3xl opacity-30" />
+            <div className="relative rounded-3xl p-8 bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl">
 
-            <div className="relative rounded-[30px] p-8 sm:p-10
-                            bg-white/10 backdrop-blur-2xl
-                            border border-white/30
-                            shadow-[0_30px_80px_rgba(0,0,0,0.4)]
-                            overflow-hidden">
-
-              {/* Light Sweep */}
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-r
-                           from-transparent via-white/40 to-transparent
-                           opacity-10"
-                animate={!reduceMotion ? { x: ["-100%", "100%"] } : {}}
-                transition={{ duration: 6, repeat: Infinity }}
-              />
-
-              {/* Slide Content */}
               <AnimatePresence mode="wait">
                 <motion.div
                   key={index}
-                  initial={{ opacity: 0, y: 15 }}
+                  initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -15 }}
-                  transition={{ duration: 0.4 }}
+                  exit={{ opacity: 0, y: -20 }}
                 >
-                  <h2 className="font-semibold mb-4
-                                 text-[20px] sm:text-[24px] lg:text-[28px]">
+                  <h2 className="text-xl md:text-2xl font-semibold mb-3">
                     {slides[index].title}
                   </h2>
-
-                  <p className="text-white/85 leading-relaxed
-                                text-[16px] sm:text-[17px] lg:text-[18px]">
+                  <p className="text-white/80">
                     {slides[index].desc}
                   </p>
                 </motion.div>
               </AnimatePresence>
 
-              {/* Progress Bar */}
-              <div className="mt-8 h-[4px] w-full bg-white/20 rounded-full overflow-hidden">
+              {/* PROGRESS */}
+              <div className="mt-6 h-[4px] bg-white/20 rounded-full overflow-hidden">
                 <motion.div
                   key={index}
                   className="h-full bg-horizon-amber"
@@ -176,11 +197,48 @@ export default function Hero() {
                 />
               </div>
 
+              {/* DOTS */}
+              <div className="flex gap-2 mt-4 justify-center">
+                {slides.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => handleDotClick(i)}
+                    className={`w-2.5 h-2.5 rounded-full transition ${
+                      i === index ? "bg-horizon-amber" : "bg-white/40"
+                    }`}
+                  />
+                ))}
+              </div>
+
             </div>
           </motion.div>
 
         </div>
       </div>
+
+      {/* TOOLS */}
+      <div className="relative z-20 mt-20 overflow-hidden">
+        <div className="py-6">
+          <div className="flex w-max animate-marquee gap-16 items-center">
+            {[...Array(2)].map((_, i) => (
+              <div key={i} className="flex gap-16 text-2xl opacity-80">
+                <FaReact />
+                <FaNodeJs />
+                <FaJs />
+                <FaPhp />
+                <FaLaravel />
+                <FaPython />
+                <FaAws />
+                <FaDocker />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ✅ CHATBOT (FLOATING ONLY) */}
+      <Chatbot />
+
     </section>
   );
 }

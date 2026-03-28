@@ -1,50 +1,184 @@
 /* ================= ROOT ================= */
-/* Let Tailwind & components control layout */
+:root {
+  --max-width: 1280px;
+  --radius: 1rem;
+
+  /* Colors */
+  --color-primary: #f59e0b; /* horizon-amber */
+  --color-dark: #0f172a;
+  --color-light: #ffffff;
+
+  /* Glass */
+  --glass-bg: rgba(255, 255, 255, 0.6);
+  --glass-border: rgba(255, 255, 255, 0.4);
+
+  /* Smooth UI */
+  --transition: all 0.3s ease;
+}
+
 #root {
   min-height: 100vh;
   width: 100%;
   overflow-x: hidden;
+
+  display: flex;
+  flex-direction: column;
+
+  /* NEW */
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* ================= UTILITY HELPERS ================= */
+/* ================= CONTAINER ================= */
 .container {
   width: 100%;
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 1.25rem;
-  padding-right: 1.25rem;
+  margin-inline: auto;
+
+  padding-inline: clamp(1rem, 3vw, 1.5rem);
 }
 
-/* Large screens */
+/* BREAKPOINTS */
+@media (min-width: 640px) {
+  .container { max-width: 640px; }
+}
+@media (min-width: 768px) {
+  .container { max-width: 768px; }
+}
+@media (min-width: 1024px) {
+  .container { max-width: 1024px; }
+}
 @media (min-width: 1280px) {
-  .container {
-    max-width: 1280px;
+  .container { max-width: var(--max-width); }
+}
+
+/* ================= SECTION ================= */
+section {
+  position: relative;
+
+  padding-block: clamp(3rem, 6vw, 6rem);
+}
+
+/* ================= GLASS ================= */
+.glass {
+  background: var(--glass-bg);
+
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+
+  box-shadow:
+    0 10px 40px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+
+  transition: var(--transition);
+}
+
+/* PREMIUM HOVER EFFECT */
+.glass:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.15);
+}
+
+/* DARK GLASS */
+.glass-dark {
+  background: rgba(0, 0, 0, 0.4);
+
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius);
+}
+
+/* ================= TYPOGRAPHY ================= */
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1.15;
+  text-wrap: balance;
+  letter-spacing: -0.02em;
+}
+
+/* RESPONSIVE TYPE */
+h1 { font-size: clamp(2rem, 5vw, 3.5rem); }
+h2 { font-size: clamp(1.5rem, 3.5vw, 2.2rem); }
+h3 { font-size: clamp(1.25rem, 3vw, 1.6rem); }
+
+p {
+  font-size: clamp(0.95rem, 1.5vw, 1.1rem);
+  line-height: 1.7;
+  color: rgba(255,255,255,0.85);
+}
+
+/* ================= FLEX ================= */
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* ================= GRID ================= */
+.grid-auto {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+/* ================= ANIMATIONS ================= */
+.fade-in {
+  animation: fadeIn 0.8s ease forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-/* ================= SECTION SPACING ================= */
-section {
-  position: relative;
+/* ================= MARQUEE ================= */
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 
-/* ================= GLASS UTILITIES ================= */
-.glass {
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  border-radius: 1rem;
+.animate-marquee {
+  animation: marquee 20s linear infinite;
 }
 
-/* ================= TEXT RENDERING ================= */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  line-height: 1.15;
+/* ================= SCROLLBAR ================= */
+::-webkit-scrollbar {
+  width: 6px;
 }
 
-/* ================= REMOVE DEMO CLASSES ================= */
-/* (Intentionally empty – old Vite demo styles removed) */
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.2);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary);
+}
+
+/* ================= SAFE ================= */
+.safe-x {
+  overflow-x: hidden;
+}
+
+/* ================= REMOVE OLD ================= */
+/* (clean — no Vite demo styles) */
