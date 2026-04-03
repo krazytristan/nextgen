@@ -20,7 +20,6 @@ import {
   FaDocker
 } from "react-icons/fa";
 
-/* ✅ CHATBOT */
 import Chatbot from "./Chatbot";
 
 /* ================= DATA ================= */
@@ -56,7 +55,7 @@ export default function Hero() {
   const reduceMotion = useReducedMotion();
   const timerRef = useRef(null);
 
-  /* AUTO SLIDE */
+  /* AUTO SLIDE (FIXED SMOOTH LOOP) */
   useEffect(() => {
     if (isHovered) return;
 
@@ -76,8 +75,8 @@ export default function Hero() {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
-  const bgX = useTransform(mouseX, [-0.5, 0.5], ["-12px", "12px"]);
-  const bgY = useTransform(mouseY, [-0.5, 0.5], ["-12px", "12px"]);
+  const bgX = useTransform(mouseX, [-0.5, 0.5], ["-20px", "20px"]);
+  const bgY = useTransform(mouseY, [-0.5, 0.5], ["-20px", "20px"]);
 
   const handleMouseMove = (e) => {
     if (window.innerWidth < 1024 || reduceMotion) return;
@@ -121,10 +120,10 @@ export default function Hero() {
               x: bgX,
               y: bgY
             }}
-            initial={{ opacity: 0, scale: 1.1 }}
-            animate={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0, scale: 1.15 }}
+            animate={{ opacity: 1, scale: 1.05 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 1 }}
+            transition={{ duration: 1.2 }}
           />
         </AnimatePresence>
       </div>
@@ -142,42 +141,49 @@ export default function Hero() {
 
           {/* LEFT */}
           <div>
-            <h1 className="font-extrabold leading-tight text-4xl md:text-5xl lg:text-6xl mb-6">
+            <motion.h1
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="font-extrabold leading-tight text-4xl md:text-5xl lg:text-6xl mb-6"
+            >
               Next-Generation
               <span className="block text-horizon-amber">IT Solutions</span>
               Built for Scale
-            </h1>
+            </motion.h1>
 
             <p className="text-white/80 text-lg max-w-xl">
               We build secure, scalable, and high-performance systems
               to help organizations grow and operate efficiently.
             </p>
 
-            <div className="mt-6 flex">
-              <button
-                className="bg-horizon-amber text-black px-6 py-3 rounded-xl font-semibold hover:scale-105 hover:shadow-lg hover:shadow-horizon-amber/40 transition-all duration-300"
-                onClick={goToServices}
-              >
-                View Services
-              </button>
-            </div>
+            {/* 🔥 MAGNETIC BUTTON */}
+            <motion.button
+              whileHover={{ scale: 1.08 }}
+              whileTap={{ scale: 0.95 }}
+              className="mt-6 bg-horizon-amber text-black px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-horizon-amber/50 transition-all"
+              onClick={goToServices}
+            >
+              View Services
+            </motion.button>
           </div>
 
-          {/* RIGHT CARD */}
+          {/* RIGHT CARD (GLASS + GLOW) */}
           <motion.div
             className="relative"
-            whileHover={{ scale: 1.02 }}
-            animate={!reduceMotion ? { y: [0, -8, 0] } : {}}
+            whileHover={{ scale: 1.03 }}
+            animate={!reduceMotion ? { y: [0, -10, 0] } : {}}
             transition={{ duration: 6, repeat: Infinity }}
           >
-            <div className="relative rounded-3xl p-6 md:p-8 bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl">
+            <div className="relative rounded-3xl p-6 md:p-8
+              bg-white/10 backdrop-blur-xl border border-white/20
+              shadow-[0_20px_80px_rgba(255,165,0,0.15)]">
 
               <AnimatePresence mode="wait">
                 <motion.div
                   key={index}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 25 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
+                  exit={{ opacity: 0, y: -25 }}
                 >
                   <h2 className="text-xl md:text-2xl font-semibold mb-3">
                     {slides[index].title}
@@ -206,7 +212,7 @@ export default function Hero() {
                     key={i}
                     onClick={() => handleDotClick(i)}
                     className={`w-2.5 h-2.5 rounded-full transition ${
-                      i === index ? "bg-horizon-amber" : "bg-white/40"
+                      i === index ? "bg-horizon-amber scale-125" : "bg-white/40"
                     }`}
                   />
                 ))}
@@ -218,16 +224,16 @@ export default function Hero() {
         </div>
       </motion.div>
 
-      {/* ✅ UPDATED TOOLS (INSIDE HERO + PREMIUM BAR) */}
+      {/* ICON MARQUEE (FIXED LOOP) */}
       <div className="absolute bottom-0 left-0 w-full z-20">
         <div className="bg-black/40 backdrop-blur-md border-t border-white/10 py-4 overflow-hidden">
           <motion.div
-            className="flex gap-16 text-xl w-max px-6"
+            className="flex gap-16 text-2xl w-max px-6"
             animate={{ x: ["0%", "-50%"] }}
-            transition={{ repeat: Infinity, duration: 20, ease: "linear" }}
+            transition={{ repeat: Infinity, duration: 18, ease: "linear" }}
           >
             {[...Array(2)].map((_, i) => (
-              <div key={i} className="flex gap-16 text-2xl opacity-80">
+              <div key={i} className="flex gap-16 opacity-80">
                 <FaReact />
                 <FaNodeJs />
                 <FaJs />
@@ -242,7 +248,6 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* CHATBOT */}
       <Chatbot />
     </section>
   );

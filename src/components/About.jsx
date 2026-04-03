@@ -36,7 +36,7 @@ const Icons = {
   ),
 };
 
-/* ================= ANIMATIONS ================= */
+/* ================= ANIMATION ================= */
 const fadeUp = {
   hidden: { opacity: 0, y: 28 },
   show: {
@@ -75,19 +75,27 @@ function ValueCard({ title, desc, icon: Icon }) {
   return (
     <motion.div
       variants={fadeUp}
-      whileHover={{ y: -6 }}
-      className="relative rounded-3xl p-6 bg-white/80 backdrop-blur-xl border border-white/40 shadow-xl"
+      whileHover={{ y: -6, scale: 1.02 }}
+      className="relative group rounded-3xl p-[1px]"
     >
-      <div className="text-horizon-orange mb-4"><Icon /></div>
-      <h4 className="font-semibold text-lg mb-2 text-gray-900">{title}</h4>
-      <p className="text-gray-600 text-sm">{desc}</p>
+      <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-horizon-orange/30 to-horizon-yellow/30 blur-lg opacity-0 group-hover:opacity-100 transition" />
+
+      <div className="relative bg-white/80 backdrop-blur-xl border border-white/40
+                      rounded-3xl p-6 shadow-[0_20px_60px_rgba(0,0,0,0.08)]">
+
+        <div className="text-horizon-orange mb-4"><Icon /></div>
+        <h4 className="font-semibold text-lg mb-2">{title}</h4>
+        <p className="text-gray-600 text-sm">{desc}</p>
+      </div>
     </motion.div>
   );
 }
 
+/* ================= MAIN ================= */
 export default function About() {
   const sectionRef = useRef(null);
   const reduceMotion = useReducedMotion();
+
   const START_DATE = new Date("2025-09-25");
 
   const yearsActive = useMemo(() => {
@@ -109,38 +117,15 @@ export default function About() {
   ];
 
   return (
-    <section
-      ref={sectionRef}
-      id="about"
-      className="relative py-24 sm:py-32 lg:py-40 overflow-hidden"
-    >
+    <section ref={sectionRef} id="about" className="relative py-24 sm:py-32 lg:py-40 overflow-hidden">
 
-      {/* 🔥 IMAGE BACKGROUND */}
+      {/* BACKGROUND */}
       <div className="absolute inset-0 z-0">
-        <img
-          src="/bg-tech.png"
-          alt="background"
-          className="w-full h-full object-cover"
-        />
-
-        {/* DARK OVERLAY */}
+        <img src="/team/founders.png" className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-white/90 backdrop-blur-sm" />
 
-        {/* GLOW */}
         <div className="absolute -top-32 -left-32 w-[500px] h-[500px] bg-horizon-orange/20 blur-[120px]" />
         <div className="absolute -bottom-32 -right-32 w-[500px] h-[500px] bg-horizon-yellow/20 blur-[120px]" />
-
-        {/* GRID */}
-        <div
-          className="absolute inset-0 opacity-[0.04]"
-          style={{
-            backgroundImage: `
-              linear-gradient(to right, #000 1px, transparent 1px),
-              linear-gradient(to bottom, #000 1px, transparent 1px)
-            `,
-            backgroundSize: "40px 40px",
-          }}
-        />
       </div>
 
       {/* CONTENT */}
@@ -148,20 +133,24 @@ export default function About() {
 
         {/* HEADER */}
         <motion.div variants={fadeUp} initial="hidden" whileInView="show" className="max-w-3xl mb-20">
+
           <span className="text-horizon-orange font-semibold text-sm">
             Established September 25, 2025
           </span>
 
-          <h2 className="text-[40px] font-extrabold mt-4 mb-6">
-            About <span className="text-horizon-orange">NEXGEN IT Solutions</span>
+          <h2 className="text-3xl md:text-[42px] font-extrabold mt-4 mb-6 leading-tight">
+            About{" "}
+            <span className="bg-gradient-to-r from-horizon-orange to-horizon-amber bg-clip-text text-transparent">
+              Nexgen IT Solutions
+            </span>
           </h2>
 
           <p className="text-gray-700 leading-relaxed">
-            NEXGEN IT Solutions is dedicated to delivering cutting-edge digital solutions that empower businesses to thrive in a fast-evolving technological landscape. We specialize in building scalable systems, cloud-based infrastructure, and innovative applications that enhance efficiency, security, and long-term growth.
+            Nexgen IT Solutions is dedicated to delivering cutting-edge digital solutions that empower businesses to thrive in a fast-evolving technological landscape...
           </p>
 
           <p className="text-gray-600 mt-4 leading-relaxed">
-            Our team focuses on combining strategic planning, advanced engineering, and continuous support to ensure every solution we deliver remains relevant, reliable, and future-ready.
+            Our team focuses on combining strategic planning, advanced engineering, and continuous support...
           </p>
         </motion.div>
 
@@ -169,9 +158,9 @@ export default function About() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 relative">
 
           {/* TIMELINE */}
-          <div className="hidden lg:block absolute left-1/2 top-0 h-full w-px bg-gray-300">
+          <div className="hidden lg:block absolute left-1/2 top-0 h-full w-[2px] bg-gray-200">
             <motion.div
-              className="absolute top-0 w-full bg-horizon-orange"
+              className="absolute top-0 w-full bg-horizon-orange origin-top"
               style={{ scaleY: reduceMotion ? 1 : lineScale }}
             />
           </div>
@@ -201,18 +190,9 @@ export default function About() {
 
             {/* STATS */}
             <div className="grid grid-cols-3 gap-4">
-              <div className="bg-white/80 p-5 rounded-xl text-center backdrop-blur">
-                <CountUp end={yearsActive} />
-                <p className="text-xs">Years</p>
-              </div>
-              <div className="bg-white/80 p-5 rounded-xl text-center backdrop-blur">
-                <CountUp end={10} suffix="+" />
-                <p className="text-xs">Solutions</p>
-              </div>
-              <div className="bg-white/80 p-5 rounded-xl text-center backdrop-blur">
-                Growing
-                <p className="text-xs">Clients</p>
-              </div>
+              <Stat><CountUp end={yearsActive} />Years</Stat>
+              <Stat><CountUp end={10} suffix="+" />Solutions</Stat>
+              <Stat>Growing Clients</Stat>
             </div>
 
           </motion.div>
@@ -225,5 +205,15 @@ export default function About() {
         </div>
       </div>
     </section>
+  );
+}
+
+/* STAT */
+function Stat({ children }) {
+  return (
+    <div className="bg-white/80 backdrop-blur-xl p-5 rounded-xl text-center
+                    shadow-[0_10px_30px_rgba(0,0,0,0.05)] text-sm">
+      {children}
+    </div>
   );
 }

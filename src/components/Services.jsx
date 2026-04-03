@@ -1,6 +1,11 @@
 'use client';
 
-import { motion, useReducedMotion } from "framer-motion";
+import {
+  motion,
+  useReducedMotion,
+  useMotionValue,
+  useTransform
+} from "framer-motion";
 import { useState, useEffect, useRef } from "react";
 
 /* ================= SERVICES DATA ================= */
@@ -10,6 +15,7 @@ const services = [
     desc: "Tailored systems engineered to solve real operational problems.",
     icon: "⚙️",
     accent: "from-horizon-orange to-horizon-amber",
+    glow: "rgba(255,165,0,0.25)",
     tags: ["Custom Logic", "Scalable", "Business-Focused"],
   },
   {
@@ -17,6 +23,7 @@ const services = [
     desc: "Fast, responsive applications designed with modern UX principles.",
     icon: "📱",
     accent: "from-horizon-amber to-horizon-green",
+    glow: "rgba(255,200,0,0.25)",
     tags: ["Web Apps", "Mobile", "UX/UI"],
   },
   {
@@ -24,49 +31,16 @@ const services = [
     desc: "Connecting platforms, data, and workflows into one ecosystem.",
     icon: "🔗",
     accent: "from-horizon-green to-horizon-orange",
+    glow: "rgba(0,255,150,0.25)",
     tags: ["APIs", "Automation", "Data Flow"],
-  },
-  {
-    title: "Web Development",
-    desc: "High-performance, responsive websites and web applications built for scale and reliability.",
-    icon: "🌐",
-    accent: "from-horizon-orange to-horizon-amber",
-    tags: ["React", "Responsive", "Performance"],
-  },
-  {
-    title: "System Development",
-    desc: "Custom systems engineered around real business workflows and operational needs.",
-    icon: "🧠",
-    accent: "from-horizon-amber to-horizon-green",
-    tags: ["Automation", "Integration", "Custom Logic"],
-  },
-  {
-    title: "IT Support",
-    desc: "24/7 monitoring, maintenance, and technical support to keep systems running smoothly.",
-    icon: "🛠️",
-    accent: "from-horizon-green to-horizon-orange",
-    tags: ["Monitoring", "Maintenance", "Support"],
-  },
-  {
-    title: "Networking",
-    desc: "Secure, fast, and scalable network infrastructure for growing organizations.",
-    icon: "📡",
-    accent: "from-horizon-orange to-horizon-green",
-    tags: ["Infrastructure", "Security", "Scalability"],
-  },
-  {
-    title: "Cloud Solutions",
-    desc: "Cloud deployment, migration, optimization, and long-term cloud management.",
-    icon: "☁️",
-    accent: "from-horizon-amber to-horizon-orange",
-    tags: ["Migration", "Hosting", "Optimization"],
   },
   {
     title: "Cybersecurity",
     desc: "Protection for systems, networks, and data against modern digital threats.",
     icon: "🔐",
     accent: "from-horizon-green to-horizon-amber",
-    tags: ["Data Protection", "Risk Control", "Compliance"],
+    glow: "rgba(0,255,150,0.25)",
+    tags: ["Security", "Protection", "Compliance"],
   },
 ];
 
@@ -77,9 +51,24 @@ export default function Services() {
   const containerRef = useRef(null);
 
   const [paused, setPaused] = useState(false);
-  const [activeIndex, setActiveIndex] = useState(null);
 
-  /* ================= AUTO SCROLL ================= */
+  /* GLOBAL CURSOR GLOW */
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  const glow = useTransform(
+    [mouseX, mouseY],
+    ([x, y]) =>
+      `radial-gradient(600px at ${x}px ${y}px, rgba(255,165,0,0.15), transparent 80%)`
+  );
+
+  const handleMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    mouseX.set(e.clientX - rect.left);
+    mouseY.set(e.clientY - rect.top);
+  };
+
+  /* AUTO SCROLL */
   useEffect(() => {
     if (reduceMotion || paused) return;
 
@@ -88,16 +77,15 @@ export default function Services() {
 
     let raf;
     let last = performance.now();
-    const speed = 0.03;
 
     const loop = (now) => {
       const delta = now - last;
       last = now;
 
-      el.scrollTop += delta * speed;
+      el.scrollTop += delta * 0.04;
 
       if (el.scrollTop >= el.scrollHeight / 2) {
-        el.scrollTop = 0;
+        el.scrollTop -= el.scrollHeight / 2;
       }
 
       raf = requestAnimationFrame(loop);
@@ -110,10 +98,18 @@ export default function Services() {
   return (
     <section
       id="services"
+      onMouseMove={handleMove}
       className="relative py-24 sm:py-32 lg:py-40 overflow-hidden
                  bg-gradient-to-b from-white via-horizon-yellow/30 to-white"
     >
-      <div className="max-w-[1280px] mx-auto px-6 sm:px-10 lg:px-16">
+
+      {/* 🔥 CURSOR SPOTLIGHT */}
+      <motion.div
+        className="pointer-events-none absolute inset-0 z-0"
+        style={{ background: glow }}
+      />
+
+      <div className="max-w-[1280px] mx-auto px-6 sm:px-10 lg:px-16 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-14 lg:gap-20">
 
           {/* ================= LEFT ================= */}
@@ -144,106 +140,104 @@ export default function Services() {
           <div className="lg:col-span-8">
             <div className="relative h-[520px] sm:h-[560px] overflow-hidden">
 
-              {/* FADE TOP */}
-              <div className="pointer-events-none absolute top-0 left-0 w-full h-24 bg-gradient-to-b from-white to-transparent z-10" />
-
-              {/* FADE BOTTOM */}
-              <div className="pointer-events-none absolute bottom-0 left-0 w-full h-28 bg-gradient-to-t from-white to-transparent z-10" />
+              {/* FADE */}
+              <div className="pointer-events-none absolute top-0 w-full h-24 bg-gradient-to-b from-white to-transparent z-10" />
+              <div className="pointer-events-none absolute bottom-0 w-full h-28 bg-gradient-to-t from-white to-transparent z-10" />
 
               <motion.div
                 ref={containerRef}
-                drag="y"
-                dragConstraints={{ top: -100000, bottom: 0 }}
-                dragElastic={0.04}
-                onDragStart={() => setPaused(true)}
-                onDragEnd={() => setPaused(false)}
+                className="h-full overflow-y-scroll pr-3 space-y-6 cursor-grab"
                 onMouseEnter={() => setPaused(true)}
                 onMouseLeave={() => setPaused(false)}
-                className="h-full overflow-y-scroll pr-3 space-y-6
-                           cursor-grab active:cursor-grabbing"
-                style={{
-                  WebkitOverflowScrolling: "touch",
-                  scrollbarWidth: "none",
-                }}
               >
 
                 <div className="space-y-6 pb-28">
 
-                  {[...services, ...services].map((service, i) => (
-                    <motion.div
-                      key={i}
-                      initial={{ opacity: 0, y: 40 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: i * 0.03 }}
-                      whileHover={!reduceMotion ? { scale: 1.04, y: -6 } : {}}
-                      onHoverStart={() => setActiveIndex(i)}
-                      onHoverEnd={() => setActiveIndex(null)}
-                      className={`group relative flex gap-6
-                        bg-white/80 backdrop-blur-2xl
-                        rounded-[2.2rem] p-7 sm:p-8
-                        border border-white/50
-                        transition-all duration-300
-                        ${
-                          activeIndex === i
-                            ? "shadow-[0_30px_80px_rgba(0,0,0,0.15)]"
-                            : "shadow-[0_20px_50px_rgba(0,0,0,0.08)]"
-                        }`}
-                    >
+                  {[...services, ...services].map((service, i) => {
 
-                      {/* ACCENT LINE */}
-                      <div
-                        className={`absolute left-0 top-0 h-full w-1.5
-                        rounded-l-[2.2rem]
-                        bg-gradient-to-b ${service.accent}`}
-                      />
+                    const mx = useMotionValue(0);
+                    const my = useMotionValue(0);
 
-                      {/* ICON */}
+                    const rotateX = useTransform(my, [0, 300], [10, -10]);
+                    const rotateY = useTransform(mx, [0, 300], [-10, 10]);
+
+                    const cardGlow = useTransform(
+                      [mx, my],
+                      ([x, y]) =>
+                        `radial-gradient(300px at ${x}px ${y}px, ${service.glow}, transparent 80%)`
+                    );
+
+                    return (
                       <motion.div
-                        whileHover={{ scale: 1.2 }}
-                        className="flex-shrink-0"
+                        key={i}
+                        onMouseMove={(e) => {
+                          const rect = e.currentTarget.getBoundingClientRect();
+                          mx.set(e.clientX - rect.left);
+                          my.set(e.clientY - rect.top);
+                        }}
+                        style={{
+                          rotateX,
+                          rotateY,
+                          transformPerspective: 1000,
+                        }}
+                        whileHover={{ scale: 1.05, y: -10 }}
+                        className="relative group rounded-[2rem] p-[1px]"
                       >
-                        <div
-                          className={`w-14 h-14 rounded-2xl
-                          bg-gradient-to-br ${service.accent}
-                          text-white flex items-center
-                          justify-center text-2xl shadow-lg`}
+
+                        {/* BORDER GLOW */}
+                        <div className={`absolute inset-0 rounded-[2rem]
+                          bg-gradient-to-r ${service.accent}
+                          opacity-0 group-hover:opacity-100 blur-xl transition`} />
+
+                        {/* CARD */}
+                        <motion.div
+                          style={{ background: cardGlow }}
+                          className="relative flex gap-6
+                            bg-white/80 backdrop-blur-xl
+                            rounded-[2rem] p-7 sm:p-8
+                            border border-white/50
+                            shadow-[0_25px_80px_rgba(0,0,0,0.12)]"
                         >
-                          {service.icon}
-                        </div>
+
+                          {/* ICON */}
+                          <motion.div
+                            whileHover={{ scale: 1.25, rotate: 8 }}
+                          >
+                            <div className={`w-14 h-14 rounded-xl
+                              bg-gradient-to-br ${service.accent}
+                              text-white flex items-center justify-center text-2xl shadow-lg`}>
+                              {service.icon}
+                            </div>
+                          </motion.div>
+
+                          {/* CONTENT */}
+                          <div className="flex-1">
+                            <h4 className="font-semibold text-lg mb-2 group-hover:text-horizon-orange">
+                              {service.title}
+                            </h4>
+
+                            <p className="text-gray-600 mb-4">
+                              {service.desc}
+                            </p>
+
+                            <div className="flex flex-wrap gap-2">
+                              {service.tags.map((tag, t) => (
+                                <span
+                                  key={t}
+                                  className="px-3 py-1 text-xs rounded-full
+                                             bg-white/70 border border-gray-200
+                                             hover:bg-horizon-orange hover:text-white transition"
+                                >
+                                  {tag}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+
+                        </motion.div>
                       </motion.div>
-
-                      {/* CONTENT */}
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-[18px] sm:text-[20px] mb-2
-                                       group-hover:text-horizon-orange transition">
-                          {service.title}
-                        </h4>
-
-                        <p className="text-gray-600 text-[15px] sm:text-[16px]
-                                      leading-relaxed mb-4 max-w-xl">
-                          {service.desc}
-                        </p>
-
-                        {/* TAGS */}
-                        <div className="flex flex-wrap gap-2">
-                          {service.tags.map((tag, t) => (
-                            <motion.span
-                              key={t}
-                              whileHover={{ scale: 1.1 }}
-                              className="px-3 py-1.5 rounded-full
-                                         text-xs bg-gray-100/80
-                                         text-gray-600 backdrop-blur
-                                         border border-gray-200/50"
-                            >
-                              {tag}
-                            </motion.span>
-                          ))}
-                        </div>
-                      </div>
-
-                    </motion.div>
-                  ))}
+                    );
+                  })}
 
                 </div>
               </motion.div>
