@@ -12,24 +12,24 @@ import { useEffect, useRef, useState, useMemo } from "react";
 /* ================= ICONS ================= */
 const Icons = {
   Target: () => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
       <circle cx="12" cy="12" r="10"/>
       <circle cx="12" cy="12" r="6"/>
       <circle cx="12" cy="12" r="2"/>
     </svg>
   ),
   Shield: () => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
     </svg>
   ),
   Zap: () => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
       <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
     </svg>
   ),
   Users: () => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
       <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
       <circle cx="9" cy="7" r="4"/>
     </svg>
@@ -38,19 +38,37 @@ const Icons = {
 
 /* ================= ANIMATION ================= */
 const fadeUp = {
-  hidden: { opacity: 0, y: 28 },
+  hidden: { opacity: 0, y: 30 },
   show: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] },
+    transition: { duration: 0.6, ease: "easeOut" },
   },
 };
 
-const stagger = {
-  show: { transition: { staggerChildren: 0.12 } },
+const staggerContainer = {
+  hidden: {},
+  show: {
+    transition: { staggerChildren: 0.12 },
+  },
 };
 
-/* ================= COUNT ================= */
+/* ================= DATA ================= */
+const VALUES = [
+  { title: "Mission", desc: "Deliver scalable and secure IT solutions that drive business growth.", icon: Icons.Target },
+  { title: "Vision", desc: "To become a leading provider of innovative and future-ready IT services.", icon: Icons.Zap },
+  { title: "Innovation", desc: "We integrate modern technologies continuously.", icon: Icons.Shield },
+  { title: "Commitment", desc: "Focused on quality and long-term partnerships.", icon: Icons.Users },
+];
+
+const STEPS = [
+  { t: "Strategy", d: "Align tech with business goals." },
+  { t: "Engineering", d: "Build scalable and high-performance systems." },
+  { t: "Maintenance", d: "Continuous monitoring and improvement." },
+];
+
+/* ================= COMPONENTS ================= */
+
 function CountUp({ end, suffix = "" }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
@@ -58,34 +76,41 @@ function CountUp({ end, suffix = "" }) {
 
   useEffect(() => {
     if (!isInView) return;
-    const start = performance.now();
-    const animate = (t) => {
-      const progress = Math.min((t - start) / 1200, 1);
-      setCount(Math.floor(progress * end));
+
+    let start;
+    const duration = 1200;
+
+    const animate = (timestamp) => {
+      if (!start) start = timestamp;
+      const progress = Math.min((timestamp - start) / duration, 1);
+
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setCount(Math.floor(eased * end));
+
       if (progress < 1) requestAnimationFrame(animate);
     };
+
     requestAnimationFrame(animate);
   }, [isInView, end]);
 
   return <span ref={ref}>{count}{suffix}</span>;
 }
 
-/* ================= VALUE CARD ================= */
 function ValueCard({ title, desc, icon: Icon }) {
   return (
     <motion.div
       variants={fadeUp}
-      whileHover={{ y: -6, scale: 1.02 }}
-      className="relative group rounded-3xl p-[1px]"
+      whileHover={{ y: -6 }}
+      className="relative group"
     >
-      <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-horizon-orange/30 to-horizon-yellow/30 blur-lg opacity-0 group-hover:opacity-100 transition" />
+      <div className="absolute inset-0 bg-gradient-to-br from-orange-200 to-yellow-200 opacity-0 group-hover:opacity-30 blur-xl transition" />
 
-      <div className="relative bg-white/80 backdrop-blur-xl border border-white/40
-                      rounded-3xl p-6 shadow-[0_20px_60px_rgba(0,0,0,0.08)]">
-
-        <div className="text-horizon-orange mb-4"><Icon /></div>
-        <h4 className="font-semibold text-lg mb-2">{title}</h4>
-        <p className="text-gray-600 text-sm">{desc}</p>
+      <div className="relative bg-white/80 backdrop-blur-md rounded-3xl p-6 shadow-md hover:shadow-xl transition">
+        <div className="w-12 h-12 flex items-center justify-center bg-orange-500 text-white rounded-xl mb-4">
+          <Icon />
+        </div>
+        <h4 className="font-bold text-lg">{title}</h4>
+        <p className="text-gray-600 text-sm mt-2">{desc}</p>
       </div>
     </motion.div>
   );
@@ -93,127 +118,83 @@ function ValueCard({ title, desc, icon: Icon }) {
 
 /* ================= MAIN ================= */
 export default function About() {
-  const sectionRef = useRef(null);
-  const reduceMotion = useReducedMotion();
-
-  const START_DATE = new Date("2025-09-25");
-
-  const yearsActive = useMemo(() => {
-    return Math.max(0, new Date().getFullYear() - START_DATE.getFullYear());
-  }, []);
+  const ref = useRef(null);
+  const reducedMotion = useReducedMotion();
 
   const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start 85%", "end 40%"],
+    target: ref,
+    offset: ["start end", "end start"],
   });
 
-  const lineScale = useTransform(scrollYProgress, [0, 1], [0, 1]);
+  const scale = useTransform(scrollYProgress, [0.2, 0.8], [0, 1]);
 
-  const values = [
-    { title: "Mission", desc: "Deliver scalable and secure IT solutions that drive business growth.", icon: Icons.Target },
-    { title: "Vision", desc: "To become a leading provider of innovative and future-ready IT services.", icon: Icons.Zap },
-    { title: "Innovation", desc: "We continuously adapt and integrate modern technologies.", icon: Icons.Shield },
-    { title: "Commitment", desc: "Dedicated to quality, transparency, and long-term partnerships.", icon: Icons.Users },
-  ];
+  const years = useMemo(() => {
+    const start = new Date("2025-09-25").getTime();
+    return Math.max(0, Math.floor((Date.now() - start) / (1000 * 60 * 60 * 24 * 365)));
+  }, []);
 
   return (
-    <section ref={sectionRef} id="about" className="relative py-24 sm:py-32 lg:py-40 overflow-hidden">
-
-      {/* BACKGROUND */}
-      <div className="absolute inset-0 z-0">
-        <img src="/team/founders.png" className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-white/90 backdrop-blur-sm" />
-
-        <div className="absolute -top-32 -left-32 w-[500px] h-[500px] bg-horizon-orange/20 blur-[120px]" />
-        <div className="absolute -bottom-32 -right-32 w-[500px] h-[500px] bg-horizon-yellow/20 blur-[120px]" />
-      </div>
-
-      {/* CONTENT */}
-      <div className="relative z-10 max-w-[1280px] mx-auto px-6 sm:px-10 lg:px-16">
+    <section ref={ref} id="about" className="py-28 bg-slate-50">
+      <div className="max-w-7xl mx-auto px-6">
 
         {/* HEADER */}
-        <motion.div variants={fadeUp} initial="hidden" whileInView="show" className="max-w-3xl mb-20">
+        <motion.div
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true }}
+          className="mb-20"
+        >
+          <motion.h2 variants={fadeUp} className="text-4xl font-black mb-6">
+            Digital Excellence
+          </motion.h2>
 
-          <span className="text-horizon-orange font-semibold text-sm">
-            Established September 25, 2025
-          </span>
-
-          <h2 className="text-3xl md:text-[42px] font-extrabold mt-4 mb-6 leading-tight">
-            About{" "}
-            <span className="bg-gradient-to-r from-horizon-orange to-horizon-amber bg-clip-text text-transparent">
-              Nexgen IT Solutions
-            </span>
-          </h2>
-
-          <p className="text-gray-700 leading-relaxed">
-            Nexgen IT Solutions is dedicated to delivering cutting-edge digital solutions that empower businesses to thrive in a fast-evolving technological landscape...
-          </p>
-
-          <p className="text-gray-600 mt-4 leading-relaxed">
-            Our team focuses on combining strategic planning, advanced engineering, and continuous support...
-          </p>
+          <motion.p variants={fadeUp} className="text-gray-600 max-w-xl">
+            Nexgen IT Solutions builds scalable and modern systems for businesses.
+          </motion.p>
         </motion.div>
 
         {/* GRID */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 relative">
-
-          {/* TIMELINE */}
-          <div className="hidden lg:block absolute left-1/2 top-0 h-full w-[2px] bg-gray-200">
-            <motion.div
-              className="absolute top-0 w-full bg-horizon-orange origin-top"
-              style={{ scaleY: reduceMotion ? 1 : lineScale }}
-            />
-          </div>
+        <div className="grid lg:grid-cols-2 gap-16">
 
           {/* LEFT */}
-          <motion.div variants={stagger} initial="hidden" whileInView="show" className="space-y-16">
-
-            <div>
-              <h3 className="text-xl font-bold mb-6">Our Approach</h3>
-
-              {[
-                { t: "Strategy", d: "Aligning IT solutions with business goals." },
-                { t: "Engineering", d: "Building robust and scalable systems." },
-                { t: "Maintenance", d: "Ensuring continuous optimization and support." },
-              ].map((item, i) => (
-                <motion.div key={i} variants={fadeUp} className="flex gap-4 mb-6">
-                  <div className="w-8 h-8 bg-horizon-orange/10 text-horizon-orange flex items-center justify-center rounded-full font-bold">
-                    0{i + 1}
+          <div>
+            <div className="space-y-8">
+              {STEPS.map((s, i) => (
+                <motion.div key={i} variants={fadeUp} className="flex gap-4">
+                  <div className="w-10 h-10 flex items-center justify-center border rounded-full font-bold">
+                    {i + 1}
                   </div>
                   <div>
-                    <p className="font-semibold">{item.t}</p>
-                    <p className="text-sm text-gray-600">{item.d}</p>
+                    <h4 className="font-bold">{s.t}</h4>
+                    <p className="text-gray-600 text-sm">{s.d}</p>
                   </div>
                 </motion.div>
               ))}
             </div>
 
             {/* STATS */}
-            <div className="grid grid-cols-3 gap-4">
-              <Stat><CountUp end={yearsActive} />Years</Stat>
-              <Stat><CountUp end={10} suffix="+" />Solutions</Stat>
-              <Stat>Growing Clients</Stat>
+            <div className="grid grid-cols-3 gap-4 mt-10 text-center font-bold text-lg">
+              <div><CountUp end={years}/> yrs</div>
+              <div><CountUp end={15}/>+</div>
+              <div><CountUp end={99}/> %</div>
             </div>
-
-          </motion.div>
+          </div>
 
           {/* RIGHT */}
-          <motion.div variants={stagger} initial="hidden" whileInView="show" className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {values.map((v, i) => <ValueCard key={i} {...v} />)}
+          <motion.div
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="show"
+            className="grid grid-cols-2 gap-4"
+          >
+            {VALUES.map((v, i) => (
+              <ValueCard key={i} {...v} />
+            ))}
           </motion.div>
 
         </div>
       </div>
     </section>
-  );
-}
-
-/* STAT */
-function Stat({ children }) {
-  return (
-    <div className="bg-white/80 backdrop-blur-xl p-5 rounded-xl text-center
-                    shadow-[0_10px_30px_rgba(0,0,0,0.05)] text-sm">
-      {children}
-    </div>
   );
 }

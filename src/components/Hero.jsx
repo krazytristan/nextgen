@@ -6,18 +6,13 @@ import {
   useReducedMotion,
   useMotionValue,
   useTransform,
+  useSpring
 } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 
 import {
-  FaReact,
-  FaNodeJs,
-  FaJs,
-  FaPhp,
-  FaLaravel,
-  FaPython,
-  FaAws,
-  FaDocker
+  FaReact, FaNodeJs, FaJs, FaPhp,
+  FaLaravel, FaPython, FaAws, FaDocker
 } from "react-icons/fa";
 
 import Chatbot from "./Chatbot";
@@ -25,27 +20,22 @@ import Chatbot from "./Chatbot";
 /* ================= DATA ================= */
 const slides = [
   { title: "Web Systems", desc: "High-performance platforms engineered for scalability, reliability, and speed." },
-  { title: "System Development", desc: "Custom-built systems to streamline operations." },
-  { title: "Cloud Solutions", desc: "Secure and flexible cloud infrastructure." },
+  { title: "System Development", desc: "Custom-built systems to streamline your business operations." },
+  { title: "Cloud Solutions", desc: "Secure and flexible cloud infrastructure designed for growth." },
   { title: "Mobile Applications", desc: "Cross-platform apps built for performance." },
-  { title: "UI / UX Design", desc: "Modern, intuitive user experiences." },
-  { title: "IT Support", desc: "Reliable monitoring and expert assistance." },
-  { title: "Network & Infrastructure", desc: "Secure and scalable network systems." },
-  { title: "Cybersecurity", desc: "Advanced protection for systems and data." },
+  { title: "UI / UX Design", desc: "Human-centric experiences that drive engagement." },
+  { title: "IT Support", desc: "24/7 monitoring and expert assistance." },
+  { title: "Network Infrastructure", desc: "Secure and scalable networks." },
+  { title: "Cybersecurity", desc: "End-to-end protection for your data." },
 ];
 
-const bgImages = [
-  "/images/bg1.png",
-  "/images/bg2.png",
-  "/images/bg3.png",
-  "/images/bg4.png",
-];
+const bgImages = ["/images/bg1.png","/images/bg2.png","/images/bg3.png","/images/bg4.png"];
 
 const gradients = [
-  "from-black/70 via-black/40 to-black/80",
-  "from-indigo-900/70 via-black/40 to-black/80",
-  "from-orange-900/70 via-black/40 to-black/80",
-  "from-purple-900/70 via-black/40 to-black/80",
+  "from-black via-black/60 to-black/80",
+  "from-indigo-950/80 via-black/50 to-black/90",
+  "from-orange-950/80 via-black/50 to-black/90",
+  "from-slate-900/80 via-black/50 to-black/90",
 ];
 
 export default function Hero() {
@@ -55,49 +45,60 @@ export default function Hero() {
   const reduceMotion = useReducedMotion();
   const timerRef = useRef(null);
 
-  /* AUTO SLIDE (FIXED SMOOTH LOOP) */
+  /* ================= AUTO SLIDE ================= */
   useEffect(() => {
     if (isHovered) return;
 
-    timerRef.current = setInterval(() => {
-      setIndex((prev) => (prev + 1) % slides.length);
-    }, 5000);
+    const startTimer = () => {
+      timerRef.current = setInterval(() => {
+        setIndex((prev) => (prev + 1) % slides.length);
+      }, 6000);
+    };
 
-    return () => clearInterval(timerRef.current);
+    startTimer();
+
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
   }, [isHovered]);
+
+  /* Pause when tab inactive */
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (document.hidden && timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () => document.removeEventListener("visibilitychange", handleVisibility);
+  }, []);
 
   const handleDotClick = (i) => {
     setIndex(i);
-    clearInterval(timerRef.current);
+    if (timerRef.current) clearInterval(timerRef.current);
   };
 
-  /* PARALLAX */
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
+  /* ================= PARALLAX ================= */
+  const mX = useMotionValue(0);
+  const mY = useMotionValue(0);
 
-  const bgX = useTransform(mouseX, [-0.5, 0.5], ["-20px", "20px"]);
-  const bgY = useTransform(mouseY, [-0.5, 0.5], ["-20px", "20px"]);
+  const smoothX = useSpring(mX, { damping: 25, stiffness: 150 });
+  const smoothY = useSpring(mY, { damping: 25, stiffness: 150 });
+
+  const bgX = useTransform(smoothX, [-0.5, 0.5], ["-15px", "15px"]);
+  const bgY = useTransform(smoothY, [-0.5, 0.5], ["-15px", "15px"]);
 
   const handleMouseMove = (e) => {
     if (window.innerWidth < 1024 || reduceMotion) return;
-
     const rect = e.currentTarget.getBoundingClientRect();
-    mouseX.set((e.clientX - rect.left) / rect.width - 0.5);
-    mouseY.set((e.clientY - rect.top) / rect.height - 0.5);
+    mX.set((e.clientX - rect.left) / rect.width - 0.5);
+    mY.set((e.clientY - rect.top) / rect.height - 0.5);
   };
 
-  /* SERVICES */
   const goToServices = () => {
     const section = document.getElementById("services");
-
-    if (section) {
-      section.scrollIntoView({ behavior: "smooth" });
-      section.classList.add("ring-4", "ring-horizon-amber");
-
-      setTimeout(() => {
-        section.classList.remove("ring-4", "ring-horizon-amber");
-      }, 1500);
-    }
+    if (!section) return;
+    section.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
@@ -105,146 +106,110 @@ export default function Hero() {
       id="home"
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      className="relative w-full min-h-[100svh] flex items-center overflow-hidden text-white"
+      onMouseLeave={() => {
+        setIsHovered(false);
+        mX.set(0);
+        mY.set(0);
+      }}
+      className="relative w-full min-h-screen flex items-center overflow-hidden text-white bg-black"
     >
-
       {/* BACKGROUND */}
-      <div className="absolute inset-0 z-0 overflow-hidden">
+      <div className="absolute inset-0 z-0">
         <AnimatePresence mode="wait">
           <motion.div
-            key={index}
+            key={index % bgImages.length}
             className="absolute inset-0 bg-cover bg-center"
-            style={{
-              backgroundImage: `url(${bgImages[index % bgImages.length]})`,
-              x: bgX,
-              y: bgY
-            }}
-            initial={{ opacity: 0, scale: 1.15 }}
+            style={{ backgroundImage: `url(${bgImages[index % bgImages.length]})`, x: bgX, y: bgY }}
+            initial={{ opacity: 0, scale: 1.1 }}
             animate={{ opacity: 1, scale: 1.05 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 1.2 }}
           />
         </AnimatePresence>
+
+        <div className={`absolute inset-0 bg-gradient-to-r ${gradients[index % gradients.length]} z-10`} />
       </div>
 
-      {/* GRADIENT */}
-      <div className={`absolute inset-0 bg-gradient-to-r ${gradients[index % gradients.length]} z-0`} />
-
       {/* CONTENT */}
-      <motion.div
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="relative z-20 w-full px-6 lg:px-20 py-20"
-      >
-        <div className="max-w-[1280px] mx-auto grid lg:grid-cols-2 gap-12 items-center">
+      <div className="relative z-20 w-full max-w-7xl mx-auto px-6 lg:px-12 py-24">
+        <div className="grid lg:grid-cols-2 gap-16 items-center">
 
           {/* LEFT */}
           <div>
-            <motion.h1
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="font-extrabold leading-tight text-4xl md:text-5xl lg:text-6xl mb-6"
-            >
-              Next-Generation
-              <span className="block text-horizon-amber">IT Solutions</span>
-              Built for Scale
-            </motion.h1>
+            <h1 className="font-black text-5xl md:text-6xl lg:text-7xl mb-8">
+              Next-Gen
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-horizon-amber to-orange-400">
+                IT Solutions
+              </span>
+            </h1>
 
-            <p className="text-white/80 text-lg max-w-xl">
-              We build secure, scalable, and high-performance systems
-              to help organizations grow and operate efficiently.
+            <p className="text-white/70 text-lg mb-10 max-w-lg">
+              We engineer high-performance digital ecosystems for modern businesses.
             </p>
 
-            {/* 🔥 MAGNETIC BUTTON */}
-            <motion.button
-              whileHover={{ scale: 1.08 }}
-              whileTap={{ scale: 0.95 }}
-              className="mt-6 bg-horizon-amber text-black px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-horizon-amber/50 transition-all"
-              onClick={goToServices}
-            >
-              View Services
-            </motion.button>
+            <div className="flex gap-4">
+              <button
+                onClick={goToServices}
+                className="bg-horizon-amber text-black px-8 py-4 rounded-2xl font-bold"
+              >
+                Explore Services
+              </button>
+
+              <button className="border border-white/30 px-8 py-4 rounded-2xl">
+                Our Process
+              </button>
+            </div>
           </div>
 
-          {/* RIGHT CARD (GLASS + GLOW) */}
-          <motion.div
-            className="relative"
-            whileHover={{ scale: 1.03 }}
-            animate={!reduceMotion ? { y: [0, -10, 0] } : {}}
-            transition={{ duration: 6, repeat: Infinity }}
-          >
-            <div className="relative rounded-3xl p-6 md:p-8
-              bg-white/10 backdrop-blur-xl border border-white/20
-              shadow-[0_20px_80px_rgba(255,165,0,0.15)]">
-
+          {/* RIGHT CARD */}
+          <div className="relative max-w-md w-full">
+            <div className="rounded-3xl p-8 bg-black/40 backdrop-blur-xl border border-white/10">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={index}
-                  initial={{ opacity: 0, y: 25 }}
+                  initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -25 }}
+                  exit={{ opacity: 0, y: -20 }}
                 >
-                  <h2 className="text-xl md:text-2xl font-semibold mb-3">
+                  <h2 className="text-2xl font-bold mb-4">
                     {slides[index].title}
                   </h2>
-                  <p className="text-white/80 text-sm md:text-base">
+                  <p className="text-white/60">
                     {slides[index].desc}
                   </p>
                 </motion.div>
               </AnimatePresence>
 
               {/* PROGRESS */}
-              <div className="mt-6 h-[4px] bg-white/20 rounded-full overflow-hidden">
+              <div className="mt-6 h-1 bg-white/10 rounded-full overflow-hidden">
                 <motion.div
                   key={index}
                   className="h-full bg-horizon-amber"
                   initial={{ width: 0 }}
                   animate={{ width: "100%" }}
-                  transition={{ duration: 5, ease: "linear" }}
+                  transition={{ duration: 6, ease: "linear" }}
                 />
               </div>
 
               {/* DOTS */}
-              <div className="flex gap-2 mt-4 justify-center">
+              <div className="flex gap-2 mt-6">
                 {slides.map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => handleDotClick(i)}
-                    className={`w-2.5 h-2.5 rounded-full transition ${
-                      i === index ? "bg-horizon-amber scale-125" : "bg-white/40"
-                    }`}
-                  />
+                  <button key={i} onClick={() => handleDotClick(i)}>
+                    <div className={`h-1 ${i === index ? "w-8 bg-horizon-amber" : "w-3 bg-white/30"}`} />
+                  </button>
                 ))}
               </div>
-
             </div>
-          </motion.div>
+          </div>
 
         </div>
-      </motion.div>
+      </div>
 
-      {/* ICON MARQUEE (FIXED LOOP) */}
-      <div className="absolute bottom-0 left-0 w-full z-20">
-        <div className="bg-black/40 backdrop-blur-md border-t border-white/10 py-4 overflow-hidden">
-          <motion.div
-            className="flex gap-16 text-2xl w-max px-6"
-            animate={{ x: ["0%", "-50%"] }}
-            transition={{ repeat: Infinity, duration: 18, ease: "linear" }}
-          >
-            {[...Array(2)].map((_, i) => (
-              <div key={i} className="flex gap-16 opacity-80">
-                <FaReact />
-                <FaNodeJs />
-                <FaJs />
-                <FaPhp />
-                <FaLaravel />
-                <FaPython />
-                <FaAws />
-                <FaDocker />
-              </div>
-            ))}
-          </motion.div>
+      {/* TECH STRIP */}
+      <div className="absolute bottom-0 w-full bg-black/60 py-4">
+        <div className="flex gap-10 justify-center text-2xl opacity-50">
+          <FaReact /><FaNodeJs /><FaJs /><FaPhp />
+          <FaLaravel /><FaPython /><FaAws /><FaDocker />
         </div>
       </div>
 
