@@ -22,7 +22,7 @@ const teams = [
         website: "https://personal-website-sage-tau.vercel.app/",
       },
       {
-        name: "Rodolfo C. Guce II",
+        name: "Rodolfo C. Guce III",
         role: "Co-Founder",
         image: "/team/dither3.png",
         description: "Supports strategy and system development.",
@@ -32,6 +32,23 @@ const teams = [
       },
     ],
   },
+
+  {
+  name: "Executives",
+  image: "/team/Ej.png",
+  members: [
+    {
+      name: "Elvin Joseph Comia",
+      role: "Chief Operations Officer",
+      image: "/team/Ej.png",
+      description: "Oversees daily operations, ensures organizational efficiency, and manages strategic execution across teams.",
+      email: "ejmc.ggbicas@gmail.com",
+      github: "https://github.com",
+      linkedin: "https://linkedin.com",
+      website: "https://example.com",
+    },
+  ],
+},
 
   {
     name: "Development Team 1",
