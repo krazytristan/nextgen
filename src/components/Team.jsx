@@ -29,6 +29,7 @@ const teams = [
         email: "rodolfo.guce@horizonit.com",
         github: "https://github.com",
         linkedin: "https://linkedin.com",
+        website: "https://3dportfolio.gucediter03.workers.dev/",
       },
     ],
   },
