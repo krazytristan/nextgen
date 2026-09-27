@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion, useScroll, useSpring } from "framer-motion";
 import Preloader from "./components/Preloader";
+import InteractiveBackground from "./components/InteractiveBackground";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import About from "./components/About";
@@ -21,7 +22,9 @@ export default function App() {
   });
 
   return (
-    <div className="overflow-x-hidden min-h-screen bg-black text-white selection:bg-horizon-amber selection:text-black">
+    <div className="overflow-x-hidden min-h-screen bg-black text-white selection:bg-horizon-amber selection:text-black relative">
+      {/* GLOBAL INTERACTIVE DYNAMIC BACKGROUND */}
+      <InteractiveBackground />
       {/* GLOBAL SCROLL PROGRESS BAR (RESPONDS TO SCROLL UP & DOWN) */}
       <motion.div
         style={{ scaleX }}

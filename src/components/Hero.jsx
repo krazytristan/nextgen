@@ -68,10 +68,10 @@ const slides = [
 const bgImages = ["/images/bg1.png", "/images/bg2.png", "/images/bg3.png", "/images/bg4.png"];
 
 const gradients = [
-  "from-black via-black/70 to-zinc-950/90",
-  "from-zinc-950 via-black/80 to-amber-950/40",
-  "from-black via-zinc-900/60 to-orange-950/40",
-  "from-black via-black/75 to-zinc-950/90",
+  "from-black/75 via-black/45 to-transparent",
+  "from-zinc-950/75 via-black/45 to-amber-950/20",
+  "from-black/75 via-zinc-900/45 to-orange-950/20",
+  "from-black/75 via-black/50 to-transparent",
 ];
 
 const techStack = [
@@ -163,7 +163,7 @@ export default function Hero({ loaded = true }) {
         mX.set(0);
         mY.set(0);
       }}
-      className="relative w-full min-h-screen flex flex-col justify-between overflow-hidden text-white bg-black pt-28 pb-16 lg:py-0 lg:justify-center"
+      className="relative w-full min-h-screen flex flex-col justify-between overflow-hidden text-white bg-transparent pt-28 pb-16 lg:py-0 lg:justify-center"
     >
       {/* BACKGROUND IMAGE & AMBIENT OVERLAYS */}
       <div className="absolute inset-0 z-0">

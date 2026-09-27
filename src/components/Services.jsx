@@ -934,7 +934,7 @@ export default function Services() {
     <section
       id="services"
       onMouseMove={handleMove}
-      className="relative py-28 lg:py-36 bg-black text-white overflow-hidden"
+      className="relative py-28 lg:py-36 bg-transparent text-white overflow-hidden"
     >
       {/* CURSOR GLOW */}
       {!reduceMotion && (

@@ -144,7 +144,7 @@ export default function About() {
   }, []);
 
   return (
-    <section ref={ref} id="about" className="relative py-28 lg:py-36 bg-zinc-950 text-white overflow-hidden">
+    <section ref={ref} id="about" className="relative py-28 lg:py-36 bg-transparent text-white overflow-hidden">
       {/* BACKGROUND ACCENT LIGHTING */}
       <div className="absolute top-1/2 left-0 w-80 h-80 bg-horizon-orange/10 rounded-full blur-[140px] pointer-events-none" />
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-horizon-amber/10 rounded-full blur-[160px] pointer-events-none" />

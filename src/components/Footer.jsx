@@ -48,7 +48,7 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="relative bg-zinc-950 border-t border-white/10 text-white overflow-hidden">
+    <footer className="relative bg-zinc-950/80 backdrop-blur-xl border-t border-white/10 text-white overflow-hidden">
       {/* 🌈 SUBTLE AMBIENT ACCENT LINE */}
       <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-horizon-amber to-transparent opacity-60" />
 
