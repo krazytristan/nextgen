@@ -24,6 +24,7 @@ import {
 } from "react-icons/si";
 import { ArrowRight, Sparkles, ChevronRight, CheckCircle2 } from "lucide-react";
 import Chatbot from "./Chatbot";
+import TypewriterHeadline from "./TypewriterHeadline";
 
 /* ================= DATA ================= */
 const slides = [
@@ -214,18 +215,15 @@ export default function Hero({ loaded = true }) {
               </span>
             </motion.div>
 
-            {/* HEADLINE */}
-            <motion.h1
+            {/* HEADLINE WITH INTERACTIVE TYPEWRITER */}
+            <motion.div
               initial={{ opacity: 0, y: 35 }}
               animate={loaded ? { opacity: 1, y: 0 } : { opacity: 0, y: 35 }}
               transition={{ duration: 0.7, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
-              className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.1] mb-6"
+              className="mb-6"
             >
-              Architecting Digital{" "}
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-horizon-orange via-horizon-amber to-horizon-yellow">
-                Excellence & Scale.
-              </span>
-            </motion.h1>
+              <TypewriterHeadline loaded={loaded} />
+            </motion.div>
 
             {/* DESCRIPTION */}
             <motion.p
