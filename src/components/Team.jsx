@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope, faGlobe } from "@fortawesome/free-solid-svg-icons";
@@ -9,17 +9,19 @@ import {
   Users2,
   ArrowRight,
   X,
-  Sparkles,
   ExternalLink,
   Search,
   CheckCircle2,
   Copy,
   Check,
-  Grid3X3,
   Layers,
   Code2,
-  Shield,
-  Briefcase,
+  Globe2,
+  ChevronLeft,
+  ChevronRight,
+  Play,
+  Pause,
+  SlidersHorizontal,
 } from "lucide-react";
 
 /* ================= COMPREHENSIVE TEAM DATA ================= */
@@ -92,6 +94,8 @@ const teamsData = [
         description:
           "Drives marketing strategy, brand equity, digital outreach, and strategic enterprise partnerships.",
         linkedin: "https://linkedin.com",
+        github: "https://github.com",
+        website: "https://linkedin.com",
         skills: ["Brand Strategy", "Market Acquisition", "Public Relations", "Growth Marketing"],
         status: "Executive Lead",
       },
@@ -103,6 +107,8 @@ const teamsData = [
         description:
           "Directs financial governance, budget strategy, fiscal planning, and corporate resource allocation.",
         linkedin: "https://linkedin.com",
+        github: "https://github.com",
+        website: "https://linkedin.com",
         skills: ["Financial Strategy", "Resource Planning", "Risk Governance", "Budget Allocation"],
         status: "Executive Lead",
       },
@@ -115,6 +121,8 @@ const teamsData = [
           "Coordinates technical sprints, milestones, developer velocity, and cross-team execution workflows.",
         email: "florencio.fonte@horizonit.com",
         linkedin: "https://linkedin.com",
+        github: "https://github.com",
+        website: "https://linkedin.com",
         skills: ["Project Management", "Sprint Delivery", "Agile Workflows", "Team Coordination"],
         status: "Project Delivery",
       },
@@ -164,6 +172,8 @@ const teamsData = [
         description:
           "Crafts intuitive design systems, wireframes, user testing journeys, and interactive product interfaces.",
         website: "https://portfolio.johnmark.dev",
+        github: "https://github.com",
+        linkedin: "https://linkedin.com",
         skills: ["Design Systems", "Figma Prototyping", "User Research", "Interaction Design"],
         status: "Design Lead",
       },
@@ -186,6 +196,7 @@ const teamsData = [
           "Spearheads full-stack application lifecycles, REST/GraphQL APIs, microservices, and client-server integrations.",
         github: "https://github.com",
         linkedin: "https://linkedin.com",
+        website: "https://github.com",
         skills: ["Full-Stack Engineering", "TypeScript", "RESTful APIs", "Cloud Integrations"],
         status: "Lead Full-Stack",
       },
@@ -197,6 +208,8 @@ const teamsData = [
         description:
           "Builds scalable web applications, real-time data pipelines, and responsive client user interfaces.",
         github: "https://github.com",
+        linkedin: "https://linkedin.com",
+        website: "https://github.com",
         skills: ["Frontend & Backend", "Database Logic", "API Connectors", "Modern JavaScript"],
         status: "Full-Stack Engineer",
       },
@@ -208,6 +221,8 @@ const teamsData = [
         description:
           "Provides software diagnostics, production monitoring, bug triage, and client software maintenance.",
         email: "kharlo.pitman@horizonit.com",
+        github: "https://github.com",
+        website: "https://github.com",
         skills: ["Bug Diagnostics", "Quality Support", "Maintenance", "Code Testing"],
         status: "Technical Support",
       },
@@ -215,7 +230,7 @@ const teamsData = [
   },
 ];
 
-// Flatten all members for global search & grid view
+// Flatten all members for global search & carousel view
 const allMembers = teamsData.flatMap((t) => t.members);
 
 /* ================= MAIN COMPONENT ================= */
@@ -224,8 +239,45 @@ export default function Team() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedMember, setSelectedMember] = useState(null);
   const [selectedUnit, setSelectedUnit] = useState(null);
-  const [viewMode, setViewMode] = useState("members"); // 'members' or 'units'
+  const [viewMode, setViewMode] = useState("carousel"); // 'carousel' or 'units'
   const [copiedEmail, setCopiedEmail] = useState(false);
+
+  /* CAROUSEL STATE */
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [cardsPerView, setCardsPerView] = useState(3);
+  const [isAutoPlay, setIsAutoPlay] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+
+  const carouselRef = useRef(null);
+  const [containerWidth, setContainerWidth] = useState(0);
+
+  // Measure carousel container width for sub-pixel exact translation
+  useEffect(() => {
+    if (!carouselRef.current) return;
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setContainerWidth(entry.contentRect.width);
+      }
+    });
+    observer.observe(carouselRef.current);
+    return () => observer.disconnect();
+  }, [viewMode]);
+
+  // Responsive cards per view
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 640) {
+        setCardsPerView(1);
+      } else if (window.innerWidth < 1024) {
+        setCardsPerView(2);
+      } else {
+        setCardsPerView(3);
+      }
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   // Close modals on Escape key
   useEffect(() => {
@@ -272,12 +324,51 @@ export default function Team() {
     });
   }, [activeTab, searchQuery]);
 
+  // Carousel bounds
+  const maxIndex = Math.max(0, filteredMembers.length - cardsPerView);
+  const safeIndex = Math.min(currentIndex, maxIndex);
+
+  // Autoplay timer
+  useEffect(() => {
+    if (!isAutoPlay || isHovered || filteredMembers.length <= cardsPerView) return;
+    const timer = setInterval(() => {
+      setCurrentIndex((prev) => (prev >= maxIndex ? 0 : prev + 1));
+    }, 4500);
+    return () => clearInterval(timer);
+  }, [isAutoPlay, isHovered, maxIndex, filteredMembers.length, cardsPerView]);
+
+  const handlePrev = () => {
+    setCurrentIndex((prev) => Math.max(0, Math.min(prev, maxIndex) - 1));
+  };
+
+  const handleNext = () => {
+    setCurrentIndex((prev) => Math.min(maxIndex, Math.min(prev, maxIndex) + 1));
+  };
+
   const handleCopyEmail = (email) => {
     if (!email) return;
     navigator.clipboard.writeText(email);
     setCopiedEmail(true);
     setTimeout(() => setCopiedEmail(false), 2000);
   };
+
+  // Drag swipe handling
+  const handleDragEnd = (_e, info) => {
+    const swipeThreshold = 50;
+    if (info.offset.x < -swipeThreshold) {
+      handleNext();
+    } else if (info.offset.x > swipeThreshold) {
+      handlePrev();
+    }
+  };
+
+  // Precise offset calculation
+  const gap = 24; // 24px gap between cards
+  const cardWidth =
+    containerWidth > 0
+      ? (containerWidth - (cardsPerView - 1) * gap) / cardsPerView
+      : 340;
+  const targetOffset = safeIndex * (cardWidth + gap);
 
   return (
     <>
@@ -290,7 +381,6 @@ export default function Team() {
         <div className="absolute bottom-10 left-10 w-96 h-96 bg-horizon-amber/10 rounded-full blur-[140px] pointer-events-none" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
-
           {/* ================= HEADER ================= */}
           <div className="text-center max-w-3xl mx-auto mb-16">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.06] border border-white/10 backdrop-blur-md mb-4">
@@ -329,9 +419,8 @@ export default function Team() {
           </div>
 
           {/* ================= CONTROLS ROW ================= */}
-          <div className="mb-12 space-y-4">
+          <div className="mb-8 space-y-4">
             <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
-              
               {/* TABS FILTER */}
               <div className="flex items-center gap-1.5 bg-zinc-900/80 p-1.5 rounded-2xl border border-white/10 overflow-x-auto max-w-full no-scrollbar">
                 {[
@@ -345,7 +434,10 @@ export default function Team() {
                   return (
                     <button
                       key={tab.id}
-                      onClick={() => setActiveTab(tab.id)}
+                      onClick={() => {
+                        setActiveTab(tab.id);
+                        setCurrentIndex(0);
+                      }}
                       className={`px-3.5 sm:px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all duration-200 flex items-center gap-2 ${
                         isActive
                           ? "bg-gradient-to-r from-horizon-orange to-horizon-amber text-black shadow-md shadow-orange-500/20"
@@ -375,13 +467,19 @@ export default function Team() {
                   <input
                     type="text"
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      setCurrentIndex(0);
+                    }}
                     placeholder="Search name, role, skill..."
                     className="w-full pl-9 pr-3.5 py-2.5 rounded-2xl bg-zinc-900/80 border border-white/10 text-xs sm:text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-horizon-amber focus:ring-1 focus:ring-horizon-amber transition"
                   />
                   {searchQuery && (
                     <button
-                      onClick={() => setSearchQuery("")}
+                      onClick={() => {
+                        setSearchQuery("");
+                        setCurrentIndex(0);
+                      }}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white text-xs"
                     >
                       ✕
@@ -392,69 +490,170 @@ export default function Team() {
                 {/* VIEW MODE TOGGLE */}
                 <div className="flex items-center bg-zinc-900/80 p-1 rounded-2xl border border-white/10 shrink-0">
                   <button
-                    onClick={() => setViewMode("members")}
-                    title="Grid of Members"
-                    className={`p-2 rounded-xl transition ${
-                      viewMode === "members"
-                        ? "bg-white/10 text-horizon-amber"
+                    onClick={() => setViewMode("carousel")}
+                    title="Carousel Showcase View"
+                    className={`px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition ${
+                      viewMode === "carousel"
+                        ? "bg-gradient-to-r from-horizon-orange to-horizon-amber text-black shadow-sm"
                         : "text-zinc-400 hover:text-white"
                     }`}
                   >
-                    <Grid3X3 className="w-4 h-4" />
+                    <SlidersHorizontal className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Carousel</span>
                   </button>
                   <button
                     onClick={() => setViewMode("units")}
                     title="Department Divisions"
-                    className={`p-2 rounded-xl transition ${
+                    className={`px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition ${
                       viewMode === "units"
-                        ? "bg-white/10 text-horizon-amber"
+                        ? "bg-gradient-to-r from-horizon-orange to-horizon-amber text-black shadow-sm"
                         : "text-zinc-400 hover:text-white"
                     }`}
                   >
-                    <Layers className="w-4 h-4" />
+                    <Layers className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Units</span>
                   </button>
                 </div>
-
               </div>
-
             </div>
           </div>
 
-          {/* ================= VIEW: MEMBERS GRID ================= */}
-          {viewMode === "members" && (
-            <div>
+          {/* ================= VIEW: MEMBERS CAROUSEL ================= */}
+          {viewMode === "carousel" && (
+            <div
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
+              className="space-y-6"
+            >
               {filteredMembers.length > 0 ? (
-                <motion.div
-                  layout
-                  className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-                >
-                  <AnimatePresence>
-                    {filteredMembers.map((member) => (
-                      <motion.div
-                        key={member.name}
-                        layout
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.95 }}
-                        transition={{ duration: 0.25 }}
+                <>
+                  {/* CAROUSEL HEADER BAR: COUNTER & NAVIGATION */}
+                  <div className="flex items-center justify-between px-2">
+                    <div className="flex items-center gap-2 text-xs text-zinc-400 font-semibold">
+                      <span>
+                        Showing {safeIndex + 1}–
+                        {Math.min(safeIndex + cardsPerView, filteredMembers.length)} of{" "}
+                        {filteredMembers.length}
+                      </span>
+                      <span className="text-zinc-600">•</span>
+                      <span className="text-[11px] text-zinc-500 hidden sm:inline">
+                        Drag or use arrows to navigate
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      {/* AUTOPLAY TOGGLE BUTTON */}
+                      <button
+                        onClick={() => setIsAutoPlay(!isAutoPlay)}
+                        className={`p-2 rounded-xl border text-xs flex items-center gap-1.5 transition-all ${
+                          isAutoPlay
+                            ? "bg-horizon-amber/20 border-horizon-amber/40 text-horizon-amber"
+                            : "bg-white/5 border-white/10 text-zinc-400 hover:text-white"
+                        }`}
+                        title={isAutoPlay ? "Pause Auto-play" : "Start Auto-play"}
                       >
-                        <MemberCard
-                          member={member}
-                          onSelect={() => setSelectedMember(member)}
-                        />
-                      </motion.div>
+                        {isAutoPlay ? (
+                          <Pause className="w-3.5 h-3.5" />
+                        ) : (
+                          <Play className="w-3.5 h-3.5" />
+                        )}
+                        <span className="text-[11px] font-bold hidden md:inline">
+                          {isAutoPlay ? "Auto-playing" : "Auto-play"}
+                        </span>
+                      </button>
+
+                      {/* PREV BUTTON */}
+                      <button
+                        onClick={handlePrev}
+                        disabled={safeIndex === 0}
+                        aria-label="Previous Slide"
+                        className={`p-2.5 rounded-xl border transition-all ${
+                          safeIndex === 0
+                            ? "bg-white/[0.02] border-white/5 text-zinc-600 cursor-not-allowed"
+                            : "bg-white/5 border-white/10 text-white hover:bg-white/10 hover:border-horizon-amber/40 shadow-md active:scale-95"
+                        }`}
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                      </button>
+
+                      {/* NEXT BUTTON */}
+                      <button
+                        onClick={handleNext}
+                        disabled={safeIndex >= maxIndex}
+                        aria-label="Next Slide"
+                        className={`p-2.5 rounded-xl border transition-all ${
+                          safeIndex >= maxIndex
+                            ? "bg-white/[0.02] border-white/5 text-zinc-600 cursor-not-allowed"
+                            : "bg-white/5 border-white/10 text-white hover:bg-white/10 hover:border-horizon-amber/40 shadow-md active:scale-95"
+                        }`}
+                      >
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* CAROUSEL VIEWPORT CONTAINER */}
+                  <div
+                    ref={carouselRef}
+                    className="overflow-hidden w-full py-2 cursor-grab active:cursor-grabbing"
+                  >
+                    <motion.div
+                      animate={{ x: -targetOffset }}
+                      transition={{ type: "spring", stiffness: 220, damping: 28 }}
+                      drag="x"
+                      dragConstraints={{ left: 0, right: 0 }}
+                      onDragEnd={handleDragEnd}
+                      className="flex gap-6 w-full"
+                    >
+                      {filteredMembers.map((member) => (
+                        <div
+                          key={member.name}
+                          style={{
+                            width: `${cardWidth}px`,
+                            minWidth: `${cardWidth}px`,
+                            maxWidth: `${cardWidth}px`,
+                          }}
+                          className="h-full flex flex-col shrink-0"
+                        >
+                          <MemberCard
+                            member={member}
+                            onSelect={() => setSelectedMember(member)}
+                          />
+                        </div>
+                      ))}
+                    </motion.div>
+                  </div>
+
+                  {/* PAGINATION DOTS */}
+                  <div className="flex items-center justify-center gap-1.5 pt-4">
+                    {Array.from({ length: maxIndex + 1 }).map((_, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => setCurrentIndex(idx)}
+                        aria-label={`Go to slide ${idx + 1}`}
+                        className={`h-2 rounded-full transition-all duration-300 ${
+                          safeIndex === idx
+                            ? "w-8 bg-gradient-to-r from-horizon-orange to-horizon-amber shadow-sm shadow-orange-500/50"
+                            : "w-2 bg-white/20 hover:bg-white/40"
+                        }`}
+                      />
                     ))}
-                  </AnimatePresence>
-                </motion.div>
+                  </div>
+                </>
               ) : (
                 <div className="text-center py-20 p-8 rounded-3xl bg-zinc-900/40 border border-white/10">
                   <Users2 className="w-12 h-12 text-zinc-600 mx-auto mb-4" />
-                  <h4 className="text-lg font-bold text-white mb-1">No Team Members Found</h4>
+                  <h4 className="text-lg font-bold text-white mb-1">
+                    No Team Members Found
+                  </h4>
                   <p className="text-zinc-400 text-sm max-w-sm mx-auto mb-6">
                     No results match "{searchQuery}". Try searching for another name, skill, or role.
                   </p>
                   <button
-                    onClick={() => setSearchQuery("")}
+                    onClick={() => {
+                      setSearchQuery("");
+                      setActiveTab("all");
+                    }}
                     className="px-5 py-2.5 rounded-full text-xs font-bold text-black bg-gradient-to-r from-horizon-orange to-horizon-amber"
                   >
                     Clear Search Query
@@ -479,7 +678,6 @@ export default function Team() {
               ))}
             </div>
           )}
-
         </div>
       </section>
 
@@ -541,14 +739,30 @@ export default function Team() {
                     {selectedMember.role}
                   </p>
 
-                  {/* SOCIAL LINKS */}
-                  <div className="flex items-center justify-center sm:justify-start gap-2.5 mt-4">
+                  {/* SOCIAL AND PORTFOLIO LINKS */}
+                  <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2.5 mt-4">
+                    {selectedMember.website && (
+                      <a
+                        href={selectedMember.website}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-horizon-orange to-horizon-amber text-black font-bold text-xs shadow-md hover:scale-105 transition"
+                      >
+                        <Globe2 className="w-3.5 h-3.5" />
+                        <span>Visit Portfolio</span>
+                        <ExternalLink className="w-3 h-3" />
+                      </a>
+                    )}
                     {selectedMember.email && (
                       <button
                         onClick={() => handleCopyEmail(selectedMember.email)}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs text-zinc-300 hover:text-white hover:bg-white/10 transition"
                       >
-                        {copiedEmail ? <Check className="w-3.5 h-3.5 text-horizon-green" /> : <Copy className="w-3.5 h-3.5" />}
+                        {copiedEmail ? (
+                          <Check className="w-3.5 h-3.5 text-horizon-green" />
+                        ) : (
+                          <Copy className="w-3.5 h-3.5" />
+                        )}
                         <span>{copiedEmail ? "Copied" : "Copy Email"}</span>
                       </button>
                     )}
@@ -572,17 +786,6 @@ export default function Team() {
                         title="LinkedIn Profile"
                       >
                         <FontAwesomeIcon icon={faLinkedin} className="text-sm" />
-                      </a>
-                    )}
-                    {selectedMember.website && (
-                      <a
-                        href={selectedMember.website}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="p-2 rounded-xl bg-white/5 border border-white/10 text-zinc-300 hover:text-white hover:bg-horizon-amber hover:text-black transition"
-                        title="Personal Website"
-                      >
-                        <FontAwesomeIcon icon={faGlobe} className="text-sm" />
                       </a>
                     )}
                   </div>
@@ -621,7 +824,17 @@ export default function Team() {
               {/* FOOTER */}
               <div className="pt-4 border-t border-white/10 flex items-center justify-between text-xs text-zinc-500">
                 <span>Horizon IT Solutions • Engineering Roster</span>
-                {selectedMember.email && (
+                {selectedMember.website ? (
+                  <a
+                    href={selectedMember.website}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-horizon-amber font-semibold hover:underline inline-flex items-center gap-1"
+                  >
+                    <span>Open Portfolio</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                ) : selectedMember.email ? (
                   <a
                     href={`mailto:${selectedMember.email}`}
                     className="text-horizon-amber font-semibold hover:underline inline-flex items-center gap-1"
@@ -629,7 +842,7 @@ export default function Team() {
                     <span>Direct Email</span>
                     <ExternalLink className="w-3 h-3" />
                   </a>
-                )}
+                ) : null}
               </div>
             </motion.div>
           </motion.div>
@@ -704,6 +917,12 @@ export default function Team() {
                         <p className="text-xs text-zinc-400 line-clamp-2 mt-2">
                           {m.description}
                         </p>
+                        {m.website && (
+                          <div className="mt-3 flex items-center gap-1 text-[11px] font-semibold text-horizon-amber">
+                            <Globe2 className="w-3 h-3" />
+                            <span>Portfolio Available</span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -728,7 +947,7 @@ export default function Team() {
   );
 }
 
-/* ================= MEMBER CARD COMPONENT ================= */
+/* ================= MEMBER CARD COMPONENT (AUTO-FIT ALL DETAILS) ================= */
 function MemberCard({ member, onSelect }) {
   const [imgError, setImgError] = useState(false);
 
@@ -743,13 +962,13 @@ function MemberCard({ member, onSelect }) {
   return (
     <div
       onClick={onSelect}
-      className="group relative h-full flex flex-col justify-between p-5 sm:p-6 rounded-3xl bg-zinc-900/60 border border-white/10 hover:border-horizon-amber/50 hover:bg-zinc-900/90 shadow-xl shadow-black/50 transition-all duration-300 cursor-pointer overflow-hidden"
+      className="group relative h-full flex flex-col justify-between p-6 sm:p-7 rounded-3xl bg-zinc-900/75 border border-white/10 hover:border-horizon-amber/50 hover:bg-zinc-900/95 shadow-xl shadow-black/50 transition-all duration-300 cursor-pointer overflow-hidden"
     >
       {/* AMBIENT HOVER HALO */}
-      <div className="absolute -top-16 -right-16 w-32 h-32 bg-horizon-orange/15 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+      <div className="absolute -top-16 -right-16 w-36 h-36 bg-horizon-orange/15 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
+      {/* TOP SECTION: AVATAR & SOCIALS */}
       <div>
-        {/* TOP ROW: AVATAR & SOCIAL ICONS */}
         <div className="flex items-start justify-between gap-4 mb-4">
           <div className="relative">
             {!imgError ? (
@@ -757,21 +976,39 @@ function MemberCard({ member, onSelect }) {
                 src={member.image}
                 alt={member.name}
                 onError={() => setImgError(true)}
-                className="w-16 h-20 sm:w-18 sm:h-22 object-cover rounded-2xl border border-white/15 shadow-lg group-hover:scale-105 transition-transform duration-300"
+                className="w-20 h-24 sm:w-22 sm:h-28 object-cover rounded-2xl border border-white/15 shadow-lg group-hover:scale-105 transition-transform duration-300"
               />
             ) : (
-              <div className="w-16 h-20 rounded-2xl bg-gradient-to-br from-horizon-orange to-horizon-amber flex items-center justify-center font-black text-black text-base shadow-lg">
+              <div className="w-20 h-24 rounded-2xl bg-gradient-to-br from-horizon-orange to-horizon-amber flex items-center justify-center font-black text-black text-lg shadow-lg">
                 {getInitials(member.name)}
               </div>
             )}
-            <span className="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full bg-horizon-green border-2 border-zinc-950" title="Active" />
+            <span
+              className="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full bg-horizon-green border-2 border-zinc-950"
+              title="Active Contributor"
+            />
           </div>
 
-          <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
+          {/* SOCIAL & PORTFOLIO ICONS ROW */}
+          <div
+            className="flex items-center gap-1.5 flex-wrap justify-end"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {member.website && (
+              <a
+                href={member.website}
+                target="_blank"
+                rel="noreferrer"
+                className="p-2 rounded-xl bg-horizon-amber/15 border border-horizon-amber/30 text-horizon-amber hover:text-black hover:bg-horizon-amber transition shadow-sm"
+                title="Personal Portfolio Website"
+              >
+                <FontAwesomeIcon icon={faGlobe} className="text-xs" />
+              </a>
+            )}
             {member.email && (
               <a
                 href={`mailto:${member.email}`}
-                className="p-1.5 rounded-lg bg-white/5 border border-white/10 text-zinc-400 hover:text-white hover:bg-horizon-amber hover:text-black transition"
+                className="p-2 rounded-xl bg-white/5 border border-white/10 text-zinc-400 hover:text-white hover:bg-white/10 transition"
                 title="Send Email"
               >
                 <FontAwesomeIcon icon={faEnvelope} className="text-xs" />
@@ -782,7 +1019,7 @@ function MemberCard({ member, onSelect }) {
                 href={member.github}
                 target="_blank"
                 rel="noreferrer"
-                className="p-1.5 rounded-lg bg-white/5 border border-white/10 text-zinc-400 hover:text-white hover:bg-horizon-amber hover:text-black transition"
+                className="p-2 rounded-xl bg-white/5 border border-white/10 text-zinc-400 hover:text-white hover:bg-white/10 transition"
                 title="GitHub"
               >
                 <FontAwesomeIcon icon={faGithub} className="text-xs" />
@@ -793,7 +1030,7 @@ function MemberCard({ member, onSelect }) {
                 href={member.linkedin}
                 target="_blank"
                 rel="noreferrer"
-                className="p-1.5 rounded-lg bg-white/5 border border-white/10 text-zinc-400 hover:text-white hover:bg-horizon-amber hover:text-black transition"
+                className="p-2 rounded-xl bg-white/5 border border-white/10 text-zinc-400 hover:text-white hover:bg-white/10 transition"
                 title="LinkedIn"
               >
                 <FontAwesomeIcon icon={faLinkedin} className="text-xs" />
@@ -804,43 +1041,62 @@ function MemberCard({ member, onSelect }) {
 
         {/* MEMBER INFORMATION */}
         <div>
-          <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-white/5 text-zinc-400 border border-white/10 mb-2">
+          <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-white/5 text-horizon-amber border border-white/10 mb-2">
             {member.unit}
           </span>
-          <h4 className="text-base sm:text-lg font-bold text-white group-hover:text-horizon-amber transition-colors line-clamp-1">
+          <h4 className="text-lg sm:text-xl font-black text-white group-hover:text-horizon-amber transition-colors">
             {member.name}
           </h4>
-          <p className="text-xs text-horizon-amber font-semibold mt-0.5 line-clamp-1">
+          <p className="text-xs sm:text-sm text-horizon-amber font-semibold mt-0.5">
             {member.role}
           </p>
-          <p className="text-xs text-zinc-400 leading-relaxed mt-2.5 line-clamp-2">
+          <p className="text-xs text-zinc-300 leading-relaxed mt-3">
             {member.description}
           </p>
         </div>
+
+        {/* SKILLS CHIPS (AUTO-FIT CLOUD) */}
+        <div className="mt-4 pt-3 border-t border-white/5">
+          <div className="flex flex-wrap gap-1.5">
+            {member.skills?.map((skill, i) => (
+              <span
+                key={i}
+                className="text-[11px] px-2.5 py-1 rounded-lg bg-white/[0.04] text-zinc-300 border border-white/5"
+              >
+                {skill}
+              </span>
+            ))}
+          </div>
+        </div>
       </div>
 
-      {/* BOTTOM SKILLS & ACTION */}
-      <div className="pt-4 mt-4 border-t border-white/5 flex items-center justify-between">
-        <div className="flex flex-wrap gap-1">
-          {member.skills?.slice(0, 2).map((s, i) => (
-            <span
-              key={i}
-              className="text-[10px] px-2 py-0.5 rounded-md bg-white/[0.04] text-zinc-300 border border-white/5 truncate max-w-[100px]"
-            >
-              {s}
-            </span>
-          ))}
-          {member.skills?.length > 2 && (
-            <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-white/[0.04] text-zinc-400">
-              +{member.skills.length - 2}
-            </span>
-          )}
-        </div>
+      {/* BOTTOM ACTIONS: DEDICATED PORTFOLIO LINK & BIO TRIGGER */}
+      <div
+        className="pt-4 mt-5 border-t border-white/10 flex items-center gap-2.5"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {member.website ? (
+          <a
+            href={member.website}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 py-2.5 px-3 rounded-xl bg-gradient-to-r from-horizon-orange to-horizon-amber text-black font-bold text-xs flex items-center justify-center gap-1.5 shadow-md shadow-orange-500/20 hover:brightness-110 active:scale-95 transition-all"
+          >
+            <Globe2 className="w-3.5 h-3.5" />
+            <span>View Portfolio</span>
+            <ExternalLink className="w-3 h-3" />
+          </a>
+        ) : null}
 
-        <span className="text-xs font-bold text-horizon-amber group-hover:translate-x-1 transition-transform flex items-center gap-1">
-          <span>Bio</span>
-          <ArrowRight className="w-3 h-3" />
-        </span>
+        <button
+          onClick={onSelect}
+          className={`${
+            member.website ? "px-3.5" : "flex-1"
+          } py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-white font-semibold text-xs border border-white/10 flex items-center justify-center gap-1.5 transition-all`}
+        >
+          <span>{member.website ? "Bio" : "Inspect Full Bio"}</span>
+          <ArrowRight className="w-3.5 h-3.5 text-horizon-amber" />
+        </button>
       </div>
     </div>
   );
