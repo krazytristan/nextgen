@@ -7,7 +7,14 @@ import { BsRobot } from "react-icons/bs";
 
 export default function Chatbot() {
   const [open, setOpen] = useState(false);
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState(() => {
+    try {
+      const saved = localStorage.getItem("chat-history");
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
   const [input, setInput] = useState("");
   const [typing, setTyping] = useState(false);
   const [sending, setSending] = useState(false);
@@ -16,14 +23,6 @@ export default function Chatbot() {
   const inputRef = useRef(null);
 
   const API_URL = "http://localhost:5000/api/chat";
-
-  /* LOAD CHAT HISTORY */
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem("chat-history");
-      if (saved) setMessages(JSON.parse(saved));
-    } catch {}
-  }, []);
 
   /* SAVE + AUTO SCROLL */
   useEffect(() => {

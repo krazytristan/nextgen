@@ -3,9 +3,6 @@
 import {
   motion,
   useInView,
-  useReducedMotion,
-  useScroll,
-  useTransform,
 } from "framer-motion";
 import { useEffect, useRef, useState, useMemo } from "react";
 
@@ -119,14 +116,6 @@ function ValueCard({ title, desc, icon: Icon }) {
 /* ================= MAIN ================= */
 export default function About() {
   const ref = useRef(null);
-  const reducedMotion = useReducedMotion();
-
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"],
-  });
-
-  const scale = useTransform(scrollYProgress, [0.2, 0.8], [0, 1]);
 
   const years = useMemo(() => {
     const start = new Date("2025-09-25").getTime();
