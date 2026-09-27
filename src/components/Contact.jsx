@@ -7,7 +7,7 @@ import {
   animate,
   AnimatePresence,
 } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import emailjs from "@emailjs/browser";
 import {
   MapPin,
@@ -36,6 +36,21 @@ export default function Contact() {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState(null);
+
+  /* LISTEN FOR INTERACTIVE SERVICE SELECTION */
+  useEffect(() => {
+    const handleSelectService = (e) => {
+      if (e.detail) {
+        setForm((prev) => ({
+          ...prev,
+          subject: e.detail.subject || prev.subject,
+          message: e.detail.message ? (prev.message ? `${prev.message}\n\n${e.detail.message}` : e.detail.message) : prev.message,
+        }));
+      }
+    };
+    window.addEventListener("horizon-select-service", handleSelectService);
+    return () => window.removeEventListener("horizon-select-service", handleSelectService);
+  }, []);
 
   /* CURSOR GLOW EFFECT */
   const mouseX = useMotionValue(0);
