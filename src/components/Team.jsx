@@ -1,7 +1,12 @@
-'use client';
-
 import { useState, useEffect, useMemo, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import {
+  motion,
+  AnimatePresence,
+  useMotionValue,
+  useSpring,
+  useTransform,
+  useReducedMotion,
+} from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope, faGlobe } from "@fortawesome/free-solid-svg-icons";
 import { faGithub, faLinkedin } from "@fortawesome/free-brands-svg-icons";
@@ -370,12 +375,39 @@ export default function Team() {
       : 340;
   const targetOffset = safeIndex * (cardWidth + gap);
 
+  /* SECTION-WIDE CURSOR AMBIENT GLOW */
+  const reduceMotion = useReducedMotion();
+  const sectionMouseX = useMotionValue(0);
+  const sectionMouseY = useMotionValue(0);
+
+  const sectionGlow = useTransform(
+    [sectionMouseX, sectionMouseY],
+    ([x, y]) =>
+      `radial-gradient(750px at ${x}px ${y}px, rgba(236,143,94,0.12), transparent 80%)`
+  );
+
+  const handleSectionMouseMove = (e) => {
+    if (reduceMotion) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    sectionMouseX.set(e.clientX - rect.left);
+    sectionMouseY.set(e.clientY - rect.top);
+  };
+
   return (
     <>
       <section
         id="team"
+        onMouseMove={handleSectionMouseMove}
         className="relative py-28 lg:py-36 bg-zinc-950 text-white overflow-hidden"
       >
+        {/* INTERACTIVE CURSOR LIGHT MESH */}
+        {!reduceMotion && (
+          <motion.div
+            className="absolute inset-0 pointer-events-none"
+            style={{ background: sectionGlow }}
+          />
+        )}
+
         {/* AMBIENT LIGHTING MESH */}
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[700px] bg-gradient-to-b from-horizon-orange/10 via-horizon-amber/5 to-transparent rounded-full blur-[160px] pointer-events-none" />
         <div className="absolute bottom-10 left-10 w-96 h-96 bg-horizon-amber/10 rounded-full blur-[140px] pointer-events-none" />
@@ -947,9 +979,42 @@ export default function Team() {
   );
 }
 
-/* ================= MEMBER CARD COMPONENT (AUTO-FIT ALL DETAILS) ================= */
+/* ================= MEMBER CARD COMPONENT (WITH DYNAMIC CURSOR LIGHT) ================= */
 function MemberCard({ member, onSelect }) {
   const [imgError, setImgError] = useState(false);
+  const reduceMotion = useReducedMotion();
+
+  // Cursor tracking for card light
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  const smoothX = useSpring(mouseX, { stiffness: 140, damping: 20 });
+  const smoothY = useSpring(mouseY, { stiffness: 140, damping: 20 });
+
+  // 3D micro tilt reflecting light
+  const rotateX = useTransform(smoothY, [0, 480], [4, -4]);
+  const rotateY = useTransform(smoothX, [0, 360], [-4, 4]);
+
+  // Card cursor spotlight fill
+  const cardLight = useTransform(
+    [smoothX, smoothY],
+    ([x, y]) =>
+      `radial-gradient(380px circle at ${x}px ${y}px, rgba(243, 182, 100, 0.22), transparent 75%)`
+  );
+
+  // Dynamic border spotlight beam
+  const borderLight = useTransform(
+    [smoothX, smoothY],
+    ([x, y]) =>
+      `radial-gradient(280px circle at ${x}px ${y}px, rgba(236, 143, 94, 0.75), transparent 60%)`
+  );
+
+  const handleMouseMove = (e) => {
+    if (reduceMotion || window.innerWidth < 768) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    mouseX.set(e.clientX - rect.left);
+    mouseY.set(e.clientY - rect.top);
+  };
 
   const getInitials = (name) => {
     return name
@@ -960,187 +1025,255 @@ function MemberCard({ member, onSelect }) {
   };
 
   return (
-    <div
+    <motion.div
+      onMouseMove={handleMouseMove}
       onClick={onSelect}
-      className="group relative h-full flex flex-col justify-between p-6 sm:p-7 rounded-3xl bg-zinc-900/75 border border-white/10 hover:border-horizon-amber/50 hover:bg-zinc-900/95 shadow-xl shadow-black/50 transition-all duration-300 cursor-pointer overflow-hidden"
+      style={!reduceMotion ? { rotateX, rotateY, transformPerspective: 1000 } : {}}
+      whileHover={{ y: -6, scale: 1.01 }}
+      className="group relative h-full rounded-3xl p-[1px] transition-all duration-300 cursor-pointer overflow-hidden flex flex-col justify-between"
     >
-      {/* AMBIENT HOVER HALO */}
-      <div className="absolute -top-16 -right-16 w-36 h-36 bg-horizon-orange/15 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+      {/* DYNAMIC CURSOR BORDER LIGHT BEAM */}
+      {!reduceMotion && (
+        <motion.div
+          className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+          style={{ background: borderLight }}
+        />
+      )}
 
-      {/* TOP SECTION: AVATAR & SOCIALS */}
-      <div>
-        <div className="flex items-start justify-between gap-4 mb-4">
-          <div className="relative">
-            {!imgError ? (
-              <img
-                src={member.image}
-                alt={member.name}
-                onError={() => setImgError(true)}
-                className="w-20 h-24 sm:w-22 sm:h-28 object-cover rounded-2xl border border-white/15 shadow-lg group-hover:scale-105 transition-transform duration-300"
-              />
-            ) : (
-              <div className="w-20 h-24 rounded-2xl bg-gradient-to-br from-horizon-orange to-horizon-amber flex items-center justify-center font-black text-black text-lg shadow-lg">
-                {getInitials(member.name)}
-              </div>
-            )}
-            <span
-              className="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full bg-horizon-green border-2 border-zinc-950"
-              title="Active Contributor"
-            />
-          </div>
+      {/* AMBIENT CORNER HALO */}
+      <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-horizon-orange/25 via-transparent to-horizon-amber/25 opacity-0 group-hover:opacity-100 blur-sm transition-opacity duration-500 pointer-events-none" />
 
-          {/* SOCIAL & PORTFOLIO ICONS ROW */}
-          <div
-            className="flex items-center gap-1.5 flex-wrap justify-end"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {member.website && (
-              <a
-                href={member.website}
-                target="_blank"
-                rel="noreferrer"
-                className="p-2 rounded-xl bg-horizon-amber/15 border border-horizon-amber/30 text-horizon-amber hover:text-black hover:bg-horizon-amber transition shadow-sm"
-                title="Personal Portfolio Website"
-              >
-                <FontAwesomeIcon icon={faGlobe} className="text-xs" />
-              </a>
-            )}
-            {member.email && (
-              <a
-                href={`mailto:${member.email}`}
-                className="p-2 rounded-xl bg-white/5 border border-white/10 text-zinc-400 hover:text-white hover:bg-white/10 transition"
-                title="Send Email"
-              >
-                <FontAwesomeIcon icon={faEnvelope} className="text-xs" />
-              </a>
-            )}
-            {member.github && (
-              <a
-                href={member.github}
-                target="_blank"
-                rel="noreferrer"
-                className="p-2 rounded-xl bg-white/5 border border-white/10 text-zinc-400 hover:text-white hover:bg-white/10 transition"
-                title="GitHub"
-              >
-                <FontAwesomeIcon icon={faGithub} className="text-xs" />
-              </a>
-            )}
-            {member.linkedin && (
-              <a
-                href={member.linkedin}
-                target="_blank"
-                rel="noreferrer"
-                className="p-2 rounded-xl bg-white/5 border border-white/10 text-zinc-400 hover:text-white hover:bg-white/10 transition"
-                title="LinkedIn"
-              >
-                <FontAwesomeIcon icon={faLinkedin} className="text-xs" />
-              </a>
-            )}
-          </div>
-        </div>
-
-        {/* MEMBER INFORMATION */}
-        <div>
-          <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-white/5 text-horizon-amber border border-white/10 mb-2">
-            {member.unit}
-          </span>
-          <h4 className="text-lg sm:text-xl font-black text-white group-hover:text-horizon-amber transition-colors">
-            {member.name}
-          </h4>
-          <p className="text-xs sm:text-sm text-horizon-amber font-semibold mt-0.5">
-            {member.role}
-          </p>
-          <p className="text-xs text-zinc-300 leading-relaxed mt-3">
-            {member.description}
-          </p>
-        </div>
-
-        {/* SKILLS CHIPS (AUTO-FIT CLOUD) */}
-        <div className="mt-4 pt-3 border-t border-white/5">
-          <div className="flex flex-wrap gap-1.5">
-            {member.skills?.map((skill, i) => (
-              <span
-                key={i}
-                className="text-[11px] px-2.5 py-1 rounded-lg bg-white/[0.04] text-zinc-300 border border-white/5"
-              >
-                {skill}
-              </span>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* BOTTOM ACTIONS: DEDICATED PORTFOLIO LINK & BIO TRIGGER */}
-      <div
-        className="pt-4 mt-5 border-t border-white/10 flex items-center gap-2.5"
-        onClick={(e) => e.stopPropagation()}
+      {/* MAIN CARD BODY WITH CURSOR SPOTLIGHT */}
+      <motion.div
+        style={!reduceMotion ? { background: cardLight } : {}}
+        className="relative z-10 flex-1 flex flex-col justify-between p-6 sm:p-7 rounded-3xl bg-zinc-950/85 backdrop-blur-2xl border border-white/10 group-hover:border-white/20 shadow-2xl shadow-black/80 transition-colors duration-300 overflow-hidden"
       >
-        {member.website ? (
-          <a
-            href={member.website}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex-1 py-2.5 px-3 rounded-xl bg-gradient-to-r from-horizon-orange to-horizon-amber text-black font-bold text-xs flex items-center justify-center gap-1.5 shadow-md shadow-orange-500/20 hover:brightness-110 active:scale-95 transition-all"
-          >
-            <Globe2 className="w-3.5 h-3.5" />
-            <span>View Portfolio</span>
-            <ExternalLink className="w-3 h-3" />
-          </a>
-        ) : null}
+        {/* LIGHT SHIMMER SWEEP ON HOVER */}
+        <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/[0.05] to-transparent pointer-events-none" />
 
-        <button
-          onClick={onSelect}
-          className={`${
-            member.website ? "px-3.5" : "flex-1"
-          } py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-white font-semibold text-xs border border-white/10 flex items-center justify-center gap-1.5 transition-all`}
+        {/* TOP SECTION: AVATAR & SOCIALS */}
+        <div>
+          <div className="flex items-start justify-between gap-4 mb-4">
+            <div className="relative group/avatar">
+              {/* AVATAR GLOW LIGHT */}
+              <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-horizon-orange to-horizon-amber opacity-0 group-hover:opacity-60 blur-md transition-opacity duration-500" />
+
+              {!imgError ? (
+                <img
+                  src={member.image}
+                  alt={member.name}
+                  onError={() => setImgError(true)}
+                  className="relative z-10 w-20 h-24 sm:w-22 sm:h-28 object-cover rounded-2xl border border-white/20 shadow-xl group-hover:scale-105 group-hover:border-horizon-amber/50 transition-all duration-300"
+                />
+              ) : (
+                <div className="relative z-10 w-20 h-24 rounded-2xl bg-gradient-to-br from-horizon-orange to-horizon-amber flex items-center justify-center font-black text-black text-lg shadow-xl">
+                  {getInitials(member.name)}
+                </div>
+              )}
+              <span
+                className="absolute z-20 -bottom-1 -right-1 w-3.5 h-3.5 rounded-full bg-horizon-green border-2 border-zinc-950 shadow-sm shadow-green-500/50"
+                title="Active Contributor"
+              />
+            </div>
+
+            {/* SOCIAL & PORTFOLIO ICONS ROW */}
+            <div
+              className="flex items-center gap-1.5 flex-wrap justify-end relative z-20"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {member.website && (
+                <a
+                  href={member.website}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="p-2 rounded-xl bg-horizon-amber/15 border border-horizon-amber/30 text-horizon-amber hover:text-black hover:bg-horizon-amber hover:shadow-lg hover:shadow-orange-500/30 transition shadow-sm"
+                  title="Personal Portfolio Website"
+                >
+                  <FontAwesomeIcon icon={faGlobe} className="text-xs" />
+                </a>
+              )}
+              {member.email && (
+                <a
+                  href={`mailto:${member.email}`}
+                  className="p-2 rounded-xl bg-white/5 border border-white/10 text-zinc-400 hover:text-white hover:bg-white/10 hover:border-white/30 transition"
+                  title="Send Email"
+                >
+                  <FontAwesomeIcon icon={faEnvelope} className="text-xs" />
+                </a>
+              )}
+              {member.github && (
+                <a
+                  href={member.github}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="p-2 rounded-xl bg-white/5 border border-white/10 text-zinc-400 hover:text-white hover:bg-white/10 hover:border-white/30 transition"
+                  title="GitHub"
+                >
+                  <FontAwesomeIcon icon={faGithub} className="text-xs" />
+                </a>
+              )}
+              {member.linkedin && (
+                <a
+                  href={member.linkedin}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="p-2 rounded-xl bg-white/5 border border-white/10 text-zinc-400 hover:text-white hover:bg-white/10 hover:border-white/30 transition"
+                  title="LinkedIn"
+                >
+                  <FontAwesomeIcon icon={faLinkedin} className="text-xs" />
+                </a>
+              )}
+            </div>
+          </div>
+
+          {/* MEMBER INFORMATION */}
+          <div>
+            <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-white/5 text-horizon-amber border border-white/10 mb-2">
+              {member.unit}
+            </span>
+            <h4 className="text-lg sm:text-xl font-black text-white group-hover:text-horizon-amber transition-colors">
+              {member.name}
+            </h4>
+            <p className="text-xs sm:text-sm text-horizon-amber font-semibold mt-0.5">
+              {member.role}
+            </p>
+            <p className="text-xs text-zinc-300 leading-relaxed mt-3">
+              {member.description}
+            </p>
+          </div>
+
+          {/* SKILLS CHIPS (AUTO-FIT CLOUD) */}
+          <div className="mt-4 pt-3 border-t border-white/5">
+            <div className="flex flex-wrap gap-1.5">
+              {member.skills?.map((skill, i) => (
+                <span
+                  key={i}
+                  className="text-[11px] px-2.5 py-1 rounded-lg bg-white/[0.04] text-zinc-300 border border-white/5 group-hover:border-white/15 transition-colors"
+                >
+                  {skill}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* BOTTOM ACTIONS: DEDICATED PORTFOLIO LINK & BIO TRIGGER */}
+        <div
+          className="pt-4 mt-5 border-t border-white/10 flex items-center gap-2.5 relative z-20"
+          onClick={(e) => e.stopPropagation()}
         >
-          <span>{member.website ? "Bio" : "Inspect Full Bio"}</span>
-          <ArrowRight className="w-3.5 h-3.5 text-horizon-amber" />
-        </button>
-      </div>
-    </div>
+          {member.website ? (
+            <a
+              href={member.website}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-1 py-2.5 px-3 rounded-xl bg-gradient-to-r from-horizon-orange to-horizon-amber text-black font-bold text-xs flex items-center justify-center gap-1.5 shadow-md shadow-orange-500/20 hover:shadow-orange-500/40 hover:brightness-110 active:scale-95 transition-all"
+            >
+              <Globe2 className="w-3.5 h-3.5" />
+              <span>View Portfolio</span>
+              <ExternalLink className="w-3 h-3" />
+            </a>
+          ) : null}
+
+          <button
+            onClick={onSelect}
+            className={`${
+              member.website ? "px-3.5" : "flex-1"
+            } py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-white font-semibold text-xs border border-white/10 hover:border-white/25 flex items-center justify-center gap-1.5 transition-all`}
+          >
+            <span>{member.website ? "Bio" : "Inspect Full Bio"}</span>
+            <ArrowRight className="w-3.5 h-3.5 text-horizon-amber" />
+          </button>
+        </div>
+      </motion.div>
+    </motion.div>
   );
 }
 
-/* ================= UNIT CARD COMPONENT ================= */
+/* ================= UNIT CARD COMPONENT (WITH DYNAMIC CURSOR LIGHT) ================= */
 function UnitCard({ unit, onSelect }) {
+  const reduceMotion = useReducedMotion();
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  const smoothX = useSpring(mouseX, { stiffness: 140, damping: 20 });
+  const smoothY = useSpring(mouseY, { stiffness: 140, damping: 20 });
+
+  const cardLight = useTransform(
+    [smoothX, smoothY],
+    ([x, y]) =>
+      `radial-gradient(380px circle at ${x}px ${y}px, rgba(236, 143, 94, 0.22), transparent 75%)`
+  );
+
+  const borderLight = useTransform(
+    [smoothX, smoothY],
+    ([x, y]) =>
+      `radial-gradient(280px circle at ${x}px ${y}px, rgba(243, 182, 100, 0.7), transparent 60%)`
+  );
+
+  const handleMouseMove = (e) => {
+    if (reduceMotion || window.innerWidth < 768) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    mouseX.set(e.clientX - rect.left);
+    mouseY.set(e.clientY - rect.top);
+  };
+
   return (
-    <div
+    <motion.div
+      onMouseMove={handleMouseMove}
       onClick={onSelect}
-      className="group relative h-[360px] rounded-3xl overflow-hidden bg-zinc-900/60 border border-white/10 hover:border-horizon-amber/50 shadow-xl shadow-black/50 transition-all duration-300 flex flex-col justify-between cursor-pointer"
+      whileHover={{ y: -6, scale: 1.01 }}
+      className="group relative h-[360px] rounded-3xl p-[1px] shadow-xl shadow-black/50 transition-all duration-300 cursor-pointer overflow-hidden flex flex-col justify-between"
     >
-      {/* COVER IMAGE */}
-      <div className="relative h-48 w-full overflow-hidden bg-zinc-900">
-        <img
-          src={unit.coverImage}
-          alt={unit.name}
-          className="w-full h-full object-cover group-hover:scale-110 transition duration-700 opacity-75 group-hover:opacity-100"
+      {/* DYNAMIC CURSOR BORDER LIGHT */}
+      {!reduceMotion && (
+        <motion.div
+          className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+          style={{ background: borderLight }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent" />
-        <span className="absolute top-4 right-4 px-2.5 py-1 rounded-full text-[11px] font-bold bg-black/70 backdrop-blur-md border border-white/15 text-white">
-          {unit.members.length} Members
-        </span>
-      </div>
+      )}
 
-      {/* DETAILS */}
-      <div className="p-6 flex flex-col justify-between flex-1 bg-zinc-950/95">
-        <div>
-          <span className="text-[10px] font-bold uppercase tracking-wider text-horizon-amber">
-            {unit.badge}
+      {/* AMBIENT GLOW */}
+      <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-horizon-orange/20 to-horizon-amber/20 opacity-0 group-hover:opacity-100 blur-sm transition-opacity duration-500 pointer-events-none" />
+
+      {/* CARD BODY WITH CURSOR LIGHT */}
+      <motion.div
+        style={!reduceMotion ? { background: cardLight } : {}}
+        className="relative z-10 w-full h-full rounded-3xl overflow-hidden bg-zinc-950/85 border border-white/10 group-hover:border-white/20 flex flex-col justify-between"
+      >
+        {/* COVER IMAGE */}
+        <div className="relative h-48 w-full overflow-hidden bg-zinc-900">
+          <img
+            src={unit.coverImage}
+            alt={unit.name}
+            className="w-full h-full object-cover group-hover:scale-110 transition duration-700 opacity-75 group-hover:opacity-100"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent" />
+          <span className="absolute top-4 right-4 px-2.5 py-1 rounded-full text-[11px] font-bold bg-black/70 backdrop-blur-md border border-white/15 text-white shadow-lg">
+            {unit.members.length} Members
           </span>
-          <h3 className="text-xl font-bold text-white group-hover:text-horizon-amber transition-colors mt-0.5">
-            {unit.name}
-          </h3>
-          <p className="text-zinc-400 text-xs mt-1 line-clamp-2">
-            {unit.subtitle}
-          </p>
         </div>
 
-        <div className="flex items-center justify-between pt-4 border-t border-white/10 text-xs font-bold text-horizon-amber group-hover:text-horizon-yellow transition-colors">
-          <span>View Roster</span>
-          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+        {/* DETAILS */}
+        <div className="p-6 flex flex-col justify-between flex-1 bg-zinc-950/95">
+          <div>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-horizon-amber">
+              {unit.badge}
+            </span>
+            <h3 className="text-xl font-bold text-white group-hover:text-horizon-amber transition-colors mt-0.5">
+              {unit.name}
+            </h3>
+            <p className="text-zinc-400 text-xs mt-1 line-clamp-2">
+              {unit.subtitle}
+            </p>
+          </div>
+
+          <div className="flex items-center justify-between pt-4 border-t border-white/10 text-xs font-bold text-horizon-amber group-hover:text-horizon-yellow transition-colors">
+            <span>View Roster</span>
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          </div>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
