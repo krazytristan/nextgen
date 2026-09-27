@@ -58,8 +58,14 @@ export default function Footer() {
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-12 py-16 sm:py-20">
 
-        {/* ================= TOP GRID ================= */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-12 pb-14 border-b border-white/10">
+        {/* ================= TOP GRID (SCROLL UP & DOWN ANIMATION) ================= */}
+        <motion.div
+          initial={{ opacity: 0, y: 35 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false, amount: 0.15 }}
+          transition={{ duration: 0.6 }}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-12 pb-14 border-b border-white/10"
+        >
 
           {/* BRAND COLUMN */}
           <div className="lg:col-span-4">
@@ -172,10 +178,16 @@ export default function Footer() {
             </motion.a>
           </div>
 
-        </div>
+        </motion.div>
 
-        {/* ================= BOTTOM ROW ================= */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500">
+        {/* ================= BOTTOM ROW (SCROLL UP & DOWN ANIMATION) ================= */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false, amount: 0.2 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500"
+        >
           <p>
             © {new Date().getFullYear()} Horizon IT Solutions. All rights reserved.
           </p>
@@ -193,7 +205,7 @@ export default function Footer() {
             <ArrowUp className="w-3.5 h-3.5" />
             <span>Top</span>
           </button>
-        </div>
+        </motion.div>
 
       </div>
     </footer>

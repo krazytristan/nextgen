@@ -189,8 +189,14 @@ export default function Hero({ loaded = true }) {
         <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-horizon-amber/15 rounded-full blur-[140px] pointer-events-none" />
       </div>
 
-      {/* MAIN CONTAINER */}
-      <div className="relative z-20 w-full max-w-7xl mx-auto px-6 lg:px-12 my-auto">
+      {/* MAIN CONTAINER (SCROLL UP & DOWN ANIMATED) */}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: false, amount: 0.15 }}
+        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+        className="relative z-20 w-full max-w-7xl mx-auto px-6 lg:px-12 my-auto"
+      >
         <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
 
           {/* LEFT COLUMN: HERO CONTENT */}
@@ -364,13 +370,14 @@ export default function Hero({ loaded = true }) {
           </div>
 
         </div>
-      </div>
+      </motion.div>
 
-      {/* ================= CONTINUOUS TECH STACK CAROUSEL ================= */}
+      {/* ================= CONTINUOUS TECH STACK CAROUSEL (SCROLL UP & DOWN ANIMATED) ================= */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}
-        animate={loaded ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-        transition={{ duration: 0.8, delay: 0.85, ease: "easeOut" }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: false, amount: 0.15 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
         className="relative z-20 w-full bg-zinc-950/85 border-t border-white/10 backdrop-blur-2xl py-6 mt-14 overflow-hidden"
       >
         {/* HEADER BAR */}

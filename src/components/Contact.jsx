@@ -156,8 +156,14 @@ export default function Contact() {
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-12">
 
-        {/* HEADER */}
-        <div className="text-center max-w-3xl mx-auto mb-20">
+        {/* HEADER (SCROLL UP & DOWN ANIMATION) */}
+        <motion.div
+          initial={{ opacity: 0, y: 35 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false, amount: 0.2 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          className="text-center max-w-3xl mx-auto mb-20"
+        >
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.06] border border-white/10 backdrop-blur-md mb-4">
             <span className="w-2 h-2 rounded-full bg-horizon-amber" />
             <span className="text-xs font-semibold uppercase tracking-wider text-horizon-amber">
@@ -175,13 +181,19 @@ export default function Contact() {
           <p className="text-zinc-400 text-base sm:text-lg leading-relaxed font-light">
             Have a project in mind, need technical advisory, or want to explore an enterprise system? Reach out and our engineering leads will respond promptly.
           </p>
-        </div>
+        </motion.div>
 
         {/* CONTACT GRID */}
         <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-start">
 
           {/* LEFT: INFO TILES */}
-          <div className="lg:col-span-5 space-y-6">
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: false, amount: 0.2 }}
+            transition={{ duration: 0.6 }}
+            className="lg:col-span-5 space-y-6"
+          >
             <div className="p-8 rounded-3xl bg-zinc-950/80 border border-white/10 backdrop-blur-xl shadow-2xl">
               <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-horizon-amber" />
@@ -231,10 +243,16 @@ export default function Contact() {
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* RIGHT: CONTACT FORM */}
-          <div className="lg:col-span-7">
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: false, amount: 0.2 }}
+            transition={{ duration: 0.6 }}
+            className="lg:col-span-7"
+          >
             <form
               onSubmit={handleSubmit}
               className="p-8 sm:p-10 rounded-3xl bg-zinc-950/80 border border-white/10 backdrop-blur-2xl shadow-2xl shadow-black space-y-6"
@@ -333,7 +351,7 @@ export default function Contact() {
               </AnimatePresence>
 
             </form>
-          </div>
+          </motion.div>
 
         </div>
 

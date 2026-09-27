@@ -6,26 +6,25 @@ import {
   Target,
   Zap,
   ShieldCheck,
-  Users2,
   CheckCircle2,
-  ArrowRight,
   Sparkles
 } from "lucide-react";
 
 /* ================= ANIMATION VARIANTS ================= */
 const fadeUp = {
-  hidden: { opacity: 0, y: 30 },
+  hidden: { opacity: 0, y: 35 },
   show: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.6, ease: "easeOut" },
+    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
   },
 };
 
 const staggerContainer = {
-  hidden: {},
+  hidden: { opacity: 0 },
   show: {
-    transition: { staggerChildren: 0.12 },
+    opacity: 1,
+    transition: { staggerChildren: 0.15, delayChildren: 0.1 },
   },
 };
 
@@ -78,12 +77,13 @@ const PROCESS_STEPS = [
 /* ================= COMPONENTS ================= */
 function CountUp({ end, suffix = "" }) {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true });
+  const isInView = useInView(ref, { once: false, amount: 0.4 });
   const [count, setCount] = useState(0);
 
   useEffect(() => {
     if (!isInView) return;
 
+    let frameId;
     let start;
     const duration = 1200;
 
@@ -93,19 +93,28 @@ function CountUp({ end, suffix = "" }) {
       const eased = 1 - Math.pow(1 - progress, 3);
       setCount(Math.floor(eased * end));
 
-      if (progress < 1) requestAnimationFrame(animate);
+      if (progress < 1) {
+        frameId = requestAnimationFrame(animate);
+      }
     };
 
-    requestAnimationFrame(animate);
+    frameId = requestAnimationFrame(animate);
+
+    return () => {
+      if (frameId) cancelAnimationFrame(frameId);
+    };
   }, [isInView, end]);
 
-  return <span ref={ref}>{count}{suffix}</span>;
+  return <span ref={ref}>{isInView ? count : 0}{suffix}</span>;
 }
 
 function ValueCard({ title, desc, icon: Icon, accent }) {
   return (
     <motion.div
       variants={fadeUp}
+      initial="hidden"
+      whileInView="show"
+      viewport={{ once: false, amount: 0.2 }}
       whileHover={{ y: -6, scale: 1.02 }}
       className="relative group rounded-3xl p-6 bg-zinc-900/60 backdrop-blur-xl border border-white/10 hover:border-horizon-amber/40 shadow-xl transition-all duration-300"
     >
@@ -142,12 +151,12 @@ export default function About() {
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-12">
 
-        {/* HEADER SECTION */}
+        {/* HEADER SECTION (SCROLL UP & DOWN ANIMATION) */}
         <motion.div
           variants={staggerContainer}
           initial="hidden"
           whileInView="show"
-          viewport={{ once: true, margin: "-80px" }}
+          viewport={{ once: false, amount: 0.25 }}
           className="text-center max-w-3xl mx-auto mb-20"
         >
           <motion.div variants={fadeUp} className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.06] border border-white/10 backdrop-blur-md mb-4">
@@ -174,7 +183,12 @@ export default function About() {
 
           {/* LEFT COLUMN: HOW WE WORK (STEPS & STATS) */}
           <div className="lg:col-span-6 space-y-10">
-            <div>
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: false, amount: 0.2 }}
+              transition={{ duration: 0.6 }}
+            >
               <h3 className="text-2xl font-bold tracking-tight mb-3 text-white">
                 Our Engineering Philosophy
               </h3>
@@ -182,15 +196,15 @@ export default function About() {
                 Every line of code and infrastructure component we build is designed for longevity, security, and effortless scaling.
               </p>
 
-              {/* STEP CARDS */}
+              {/* STEP CARDS (SCROLL ANIMATED) */}
               <div className="space-y-4">
                 {PROCESS_STEPS.map((step, i) => (
                   <motion.div
                     key={i}
-                    initial={{ opacity: 0, x: -20 }}
+                    initial={{ opacity: 0, x: -30 }}
                     whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.15 }}
+                    viewport={{ once: false, amount: 0.25 }}
+                    transition={{ duration: 0.5, delay: i * 0.12 }}
                     className="flex gap-4 p-5 rounded-2xl bg-zinc-900/40 border border-white/5 hover:border-white/15 transition-all"
                   >
                     <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-horizon-orange/20 to-horizon-amber/20 border border-horizon-amber/30 text-horizon-amber flex items-center justify-center font-black text-sm shrink-0">
@@ -203,10 +217,16 @@ export default function About() {
                   </motion.div>
                 ))}
               </div>
-            </div>
+            </motion.div>
 
-            {/* KEY METRICS DISPLAY */}
-            <div className="grid grid-cols-3 gap-4 p-6 rounded-3xl bg-zinc-900/60 border border-white/10 text-center">
+            {/* KEY METRICS DISPLAY (SCROLL ANIMATED) */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              whileInView={{ opacity: 1, scale: 1, y: 0 }}
+              viewport={{ once: false, amount: 0.3 }}
+              transition={{ duration: 0.6 }}
+              className="grid grid-cols-3 gap-4 p-6 rounded-3xl bg-zinc-900/60 border border-white/10 text-center"
+            >
               <div>
                 <p className="text-3xl sm:text-4xl font-black text-horizon-amber">
                   <CountUp end={years} />+
@@ -225,23 +245,30 @@ export default function About() {
                 </p>
                 <p className="text-xs text-zinc-400 font-medium mt-1">Client Trust</p>
               </div>
-            </div>
+            </motion.div>
           </div>
 
-          {/* RIGHT COLUMN: CORE VALUES GRID */}
+          {/* RIGHT COLUMN: CORE VALUES GRID (SCROLL ANIMATED) */}
           <div className="lg:col-span-6">
-            <h3 className="text-2xl font-bold tracking-tight mb-3 text-white">
-              What Sets Us Apart
-            </h3>
-            <p className="text-zinc-400 text-sm leading-relaxed mb-8">
-              We operate at the intersection of engineering rigor, modern UI aesthetics, and enterprise dependability.
-            </p>
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: false, amount: 0.2 }}
+              transition={{ duration: 0.6 }}
+            >
+              <h3 className="text-2xl font-bold tracking-tight mb-3 text-white">
+                What Sets Us Apart
+              </h3>
+              <p className="text-zinc-400 text-sm leading-relaxed mb-8">
+                We operate at the intersection of engineering rigor, modern UI aesthetics, and enterprise dependability.
+              </p>
+            </motion.div>
 
             <motion.div
               variants={staggerContainer}
               initial="hidden"
               whileInView="show"
-              viewport={{ once: true }}
+              viewport={{ once: false, amount: 0.15 }}
               className="grid sm:grid-cols-2 gap-4"
             >
               {VALUES.map((val, i) => (

@@ -949,8 +949,14 @@ export default function Services() {
       <div className="absolute bottom-10 -left-20 w-96 h-96 bg-horizon-orange/10 rounded-full blur-[140px] pointer-events-none" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-12">
-        {/* TOP HEADER */}
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-12">
+        {/* TOP HEADER (SCROLL UP & DOWN ANIMATION) */}
+        <motion.div
+          initial={{ opacity: 0, y: 35 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false, amount: 0.2 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-12"
+        >
           <div className="max-w-2xl">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.06] border border-white/10 backdrop-blur-md mb-4">
               <span className="w-2 h-2 rounded-full bg-horizon-amber" />
@@ -1003,13 +1009,19 @@ export default function Services() {
               Pipeline Visualizer
             </button>
           </div>
-        </div>
+        </motion.div>
 
         {/* TAB 1: CATALOG VIEW */}
         {activeTab === "catalog" && (
           <div className="space-y-8">
             {/* SEARCH AND CATEGORY FILTER BAR */}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-2xl bg-zinc-950/80 border border-white/10 backdrop-blur-xl">
+            <motion.div
+              initial={{ opacity: 0, y: 25 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: false, amount: 0.2 }}
+              transition={{ duration: 0.5 }}
+              className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-2xl bg-zinc-950/80 border border-white/10 backdrop-blur-xl"
+            >
               {/* SEARCH INPUT */}
               <div className="relative w-full sm:w-80">
                 <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
@@ -1046,7 +1058,7 @@ export default function Services() {
                   </button>
                 ))}
               </div>
-            </div>
+            </motion.div>
 
             {/* SERVICES GRID */}
             {filteredServices.length > 0 ? (
@@ -1055,14 +1067,15 @@ export default function Services() {
                 className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 items-stretch"
               >
                 <AnimatePresence>
-                  {filteredServices.map((service) => (
+                  {filteredServices.map((service, idx) => (
                     <motion.div
                       key={service.id}
                       layout
-                      initial={{ opacity: 0, scale: 0.96 }}
-                      animate={{ opacity: 1, scale: 1 }}
+                      initial={{ opacity: 0, y: 35, scale: 0.96 }}
+                      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                      viewport={{ once: false, amount: 0.15 }}
                       exit={{ opacity: 0, scale: 0.96 }}
-                      transition={{ duration: 0.3 }}
+                      transition={{ duration: 0.45, delay: (idx % 3) * 0.08 }}
                       className="h-full"
                     >
                       <ServiceCard
@@ -1099,25 +1112,45 @@ export default function Services() {
 
         {/* TAB 2: INTERACTIVE SCOPE BUILDER */}
         {activeTab === "builder" && (
-          <SolutionBuilder
-            onTransferScope={(subj, msg) => scrollToContact(subj, msg)}
-          />
+          <motion.div
+            initial={{ opacity: 0, y: 35 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false, amount: 0.15 }}
+            transition={{ duration: 0.6 }}
+          >
+            <SolutionBuilder
+              onTransferScope={(subj, msg) => scrollToContact(subj, msg)}
+            />
+          </motion.div>
         )}
 
         {/* TAB 3: ARCHITECTURE VISUALIZER */}
         {activeTab === "blueprint" && (
-          <ArchitectureVisualizer
-            onInquireTier={(tierName) =>
-              scrollToContact(
-                `[Architecture Inquiry] ${tierName}`,
-                `Hello Horizon IT,\n\nI would like to discuss deploying and optimizing the ${tierName} for our project architecture.`
-              )
-            }
-          />
+          <motion.div
+            initial={{ opacity: 0, y: 35 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false, amount: 0.15 }}
+            transition={{ duration: 0.6 }}
+          >
+            <ArchitectureVisualizer
+              onInquireTier={(tierName) =>
+                scrollToContact(
+                  `[Architecture Inquiry] ${tierName}`,
+                  `Hello Horizon IT,\n\nI would like to discuss deploying and optimizing the ${tierName} for our project architecture.`
+                )
+              }
+            />
+          </motion.div>
         )}
 
         {/* BOTTOM ACTION BANNER */}
-        <div className="mt-16 p-8 sm:p-10 rounded-3xl bg-zinc-950/80 border border-white/10 backdrop-blur-xl flex flex-col sm:flex-row items-center justify-between gap-6 shadow-2xl">
+        <motion.div
+          initial={{ opacity: 0, y: 35 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false, amount: 0.2 }}
+          transition={{ duration: 0.6 }}
+          className="mt-16 p-8 sm:p-10 rounded-3xl bg-zinc-950/80 border border-white/10 backdrop-blur-xl flex flex-col sm:flex-row items-center justify-between gap-6 shadow-2xl"
+        >
           <div>
             <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">
               Need a custom tailored solution?
@@ -1135,7 +1168,7 @@ export default function Services() {
             <span>Schedule a Technical Consultation</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </button>
-        </div>
+        </motion.div>
       </div>
 
       {/* SERVICE DETAILS MODAL */}

@@ -413,8 +413,14 @@ export default function Team() {
         <div className="absolute bottom-10 left-10 w-96 h-96 bg-horizon-amber/10 rounded-full blur-[140px] pointer-events-none" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
-          {/* ================= HEADER ================= */}
-          <div className="text-center max-w-3xl mx-auto mb-16">
+          {/* ================= HEADER (SCROLL UP & DOWN ANIMATION) ================= */}
+          <motion.div
+            initial={{ opacity: 0, y: 35 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false, amount: 0.2 }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            className="text-center max-w-3xl mx-auto mb-16"
+          >
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.06] border border-white/10 backdrop-blur-md mb-4">
               <span className="w-2 h-2 rounded-full bg-horizon-amber animate-pulse" />
               <span className="text-xs font-semibold uppercase tracking-wider text-horizon-amber">
@@ -448,10 +454,16 @@ export default function Team() {
                 <span>100% In-House Engineering</span>
               </div>
             </div>
-          </div>
+          </motion.div>
 
-          {/* ================= CONTROLS ROW ================= */}
-          <div className="mb-8 space-y-4">
+          {/* ================= CONTROLS ROW (SCROLL UP & DOWN ANIMATION) ================= */}
+          <motion.div
+            initial={{ opacity: 0, y: 25 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false, amount: 0.2 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="mb-8 space-y-4"
+          >
             <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
               {/* TABS FILTER */}
               <div className="flex items-center gap-1.5 bg-zinc-900/80 p-1.5 rounded-2xl border border-white/10 overflow-x-auto max-w-full no-scrollbar">
@@ -548,11 +560,15 @@ export default function Team() {
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* ================= VIEW: MEMBERS CAROUSEL ================= */}
           {viewMode === "carousel" && (
-            <div
+            <motion.div
+              initial={{ opacity: 0, y: 35 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: false, amount: 0.15 }}
+              transition={{ duration: 0.6, delay: 0.15 }}
               onMouseEnter={() => setIsHovered(true)}
               onMouseLeave={() => setIsHovered(false)}
               className="space-y-6"
@@ -692,23 +708,30 @@ export default function Team() {
                   </button>
                 </div>
               )}
-            </div>
+            </motion.div>
           )}
 
           {/* ================= VIEW: DEPARTMENT UNITS ================= */}
           {viewMode === "units" && (
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+            <motion.div
+              initial={{ opacity: 0, y: 35 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: false, amount: 0.15 }}
+              transition={{ duration: 0.6 }}
+              className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8"
+            >
               {teamsData.map((unit, i) => (
                 <motion.div
                   key={unit.id}
                   initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: false, amount: 0.2 }}
                   transition={{ delay: i * 0.1 }}
                 >
                   <UnitCard unit={unit} onSelect={() => setSelectedUnit(unit)} />
                 </motion.div>
               ))}
-            </div>
+            </motion.div>
           )}
         </div>
       </section>
