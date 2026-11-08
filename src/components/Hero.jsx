@@ -196,9 +196,9 @@ export default function Hero({ loaded = true }) {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: false, amount: 0.15 }}
         transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-        className="relative z-20 w-full max-w-7xl mx-auto px-6 lg:px-12 my-auto"
+        className="relative z-20 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 my-auto"
       >
-        <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+        <div className="grid lg:grid-cols-12 gap-8 lg:gap-16 items-center">
 
           {/* LEFT COLUMN: HERO CONTENT */}
           <div className="lg:col-span-7">
@@ -230,7 +230,7 @@ export default function Hero({ loaded = true }) {
               initial={{ opacity: 0, y: 25 }}
               animate={loaded ? { opacity: 1, y: 0 } : { opacity: 0, y: 25 }}
               transition={{ duration: 0.7, delay: 0.5, ease: "easeOut" }}
-              className="text-zinc-300 text-sm sm:text-lg lg:text-xl font-light leading-relaxed max-w-2xl mb-8"
+              className="text-zinc-300 text-sm sm:text-base lg:text-lg font-light leading-relaxed max-w-2xl mb-8"
             >
               We craft mission-critical web systems, bespoke software platforms, and cloud infrastructure engineered for companies ready to lead the future.
             </motion.p>
@@ -244,7 +244,7 @@ export default function Hero({ loaded = true }) {
             >
               <button
                 onClick={() => scrollTo("services")}
-                className="group inline-flex items-center justify-center gap-2.5 px-7 py-4 rounded-2xl font-bold text-sm text-black bg-gradient-to-r from-horizon-orange via-horizon-amber to-horizon-yellow shadow-xl shadow-orange-500/25 hover:shadow-orange-500/40 hover:scale-105 active:scale-95 transition-all duration-200"
+                className="group inline-flex items-center justify-center gap-2.5 px-5 sm:px-7 py-3.5 sm:py-4 rounded-2xl font-bold text-sm text-black bg-gradient-to-r from-horizon-orange via-horizon-amber to-horizon-yellow shadow-xl shadow-orange-500/25 hover:shadow-orange-500/40 hover:scale-105 active:scale-95 transition-all duration-200"
               >
                 <span>Explore Services</span>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -252,7 +252,7 @@ export default function Hero({ loaded = true }) {
 
               <button
                 onClick={() => scrollTo("about")}
-                className="inline-flex items-center justify-center gap-2 px-7 py-4 rounded-2xl font-medium text-sm text-zinc-200 bg-white/[0.05] border border-white/10 backdrop-blur-md hover:bg-white/[0.1] hover:text-white hover:border-white/20 transition-all duration-200"
+                className="inline-flex items-center justify-center gap-2 px-5 sm:px-7 py-3.5 sm:py-4 rounded-2xl font-medium text-sm text-zinc-200 bg-white/[0.05] border border-white/10 backdrop-blur-md hover:bg-white/[0.1] hover:text-white hover:border-white/20 transition-all duration-200"
               >
                 <span>Why Horizon</span>
                 <ChevronRight className="w-4 h-4 text-zinc-400" />
@@ -264,18 +264,18 @@ export default function Hero({ loaded = true }) {
               initial={{ opacity: 0, y: 20 }}
               animate={loaded ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
               transition={{ delay: 0.8, duration: 0.8, ease: "easeOut" }}
-              className="grid grid-cols-3 gap-3 sm:gap-6 pt-8 sm:pt-10 mt-8 sm:mt-10 border-t border-white/10 max-w-lg"
+              className="grid grid-cols-3 gap-2 sm:gap-6 pt-6 sm:pt-10 mt-6 sm:mt-10 border-t border-white/10 max-w-lg"
             >
               <div>
-                <p className="text-xl sm:text-3xl font-extrabold text-white">99.9%</p>
+                <p className="text-lg sm:text-2xl md:text-3xl font-extrabold text-white">99.9%</p>
                 <p className="text-[10px] sm:text-xs text-zinc-400 font-medium mt-1 truncate">Uptime SLA</p>
               </div>
               <div className="border-x border-white/10 px-2 sm:px-4">
-                <p className="text-xl sm:text-3xl font-extrabold text-white">50+</p>
+                <p className="text-lg sm:text-2xl md:text-3xl font-extrabold text-white">50+</p>
                 <p className="text-[10px] sm:text-xs text-zinc-400 font-medium mt-1 truncate">Systems Built</p>
               </div>
               <div>
-                <p className="text-xl sm:text-3xl font-extrabold text-white">24/7</p>
+                <p className="text-lg sm:text-2xl md:text-3xl font-extrabold text-white">24/7</p>
                 <p className="text-[10px] sm:text-xs text-zinc-400 font-medium mt-1 truncate">Monitoring</p>
               </div>
             </motion.div>
@@ -287,7 +287,7 @@ export default function Hero({ loaded = true }) {
               initial={{ opacity: 0, scale: 0.92, y: 30 }}
               animate={loaded ? { opacity: 1, scale: 1, y: 0 } : { opacity: 0, scale: 0.92, y: 30 }}
               transition={{ duration: 0.8, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
-              className="relative rounded-3xl p-6 sm:p-8 bg-zinc-950/60 backdrop-blur-2xl border border-white/15 shadow-2xl shadow-black/80 group"
+              className="relative rounded-3xl p-5 sm:p-8 bg-zinc-950/60 backdrop-blur-2xl border border-white/15 shadow-2xl shadow-black/80 group"
             >
               {/* GLOW DECORATION */}
               <div className="absolute -top-10 -right-10 w-40 h-40 bg-gradient-to-br from-horizon-orange/20 to-horizon-amber/20 rounded-full blur-3xl pointer-events-none" />
@@ -303,7 +303,7 @@ export default function Hero({ loaded = true }) {
               </div>
 
               {/* SLIDE CONTENT */}
-              <div className="min-h-[140px]">
+              <div className="min-h-[160px] sm:min-h-[140px]">
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={index}
@@ -312,10 +312,10 @@ export default function Hero({ loaded = true }) {
                     exit={{ opacity: 0, y: -15 }}
                     transition={{ duration: 0.35 }}
                   >
-                    <h3 className="text-2xl sm:text-3xl font-bold text-white mb-3 tracking-tight">
+                    <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-3 tracking-tight">
                       {slides[index].title}
                     </h3>
-                    <p className="text-zinc-300 text-sm sm:text-base leading-relaxed">
+                    <p className="text-zinc-300 text-xs sm:text-sm md:text-base leading-relaxed">
                       {slides[index].desc}
                     </p>
                   </motion.div>
@@ -379,7 +379,7 @@ export default function Hero({ loaded = true }) {
         className="relative z-20 w-full bg-zinc-950/85 border-t border-white/10 backdrop-blur-2xl py-6 mt-14 overflow-hidden"
       >
         {/* HEADER BAR */}
-        <div className="max-w-7xl mx-auto px-6 mb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 mb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5">
           <div className="flex items-center gap-2.5">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-horizon-amber opacity-75" />
@@ -390,11 +390,11 @@ export default function Hero({ loaded = true }) {
             </span>
           </div>
 
-          <div className="flex items-center gap-2.5 text-[11px] font-medium text-zinc-400">
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2.5 text-[10px] sm:text-[11px] font-medium text-zinc-400">
             <span className="px-2 py-0.5 rounded-md bg-white/5 border border-white/5">Cloud-Native</span>
-            <span>•</span>
+            <span className="hidden sm:inline">•</span>
             <span className="px-2 py-0.5 rounded-md bg-white/5 border border-white/5">Zero-Downtime</span>
-            <span>•</span>
+            <span className="hidden sm:inline">•</span>
             <span className="px-2 py-0.5 rounded-md bg-white/5 border border-white/5">Enterprise-Grade</span>
           </div>
         </div>

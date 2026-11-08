@@ -65,8 +65,18 @@ export default function InteractiveBackground() {
       mouseY.set(e.clientY);
     };
 
+    const handleTouchMove = (e) => {
+      if (reduceMotion || !e.touches[0]) return;
+      mouseX.set(e.touches[0].clientX);
+      mouseY.set(e.touches[0].clientY);
+    };
+
     window.addEventListener("pointermove", handlePointerMove, { passive: true });
-    return () => window.removeEventListener("pointermove", handlePointerMove);
+    window.addEventListener("touchmove", handleTouchMove, { passive: true });
+    return () => {
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("touchmove", handleTouchMove);
+    };
   }, [mouseX, mouseY, reduceMotion]);
 
   // Statically seeded particles for consistent render
@@ -129,7 +139,7 @@ export default function InteractiveBackground() {
             repeat: Infinity,
             ease: "easeInOut",
           }}
-          className="absolute -top-32 -left-32 w-[650px] h-[650px] rounded-full bg-gradient-to-br from-horizon-orange/30 via-horizon-amber/20 to-transparent blur-[160px] pointer-events-none"
+          className="absolute -top-32 -left-32 w-[340px] sm:w-[650px] h-[340px] sm:h-[650px] rounded-full bg-gradient-to-br from-horizon-orange/30 via-horizon-amber/20 to-transparent blur-[90px] sm:blur-[160px] pointer-events-none will-change-transform"
         />
 
         {/* ORB 2: HORIZON AMBER (MID-RIGHT) */}
@@ -149,7 +159,7 @@ export default function InteractiveBackground() {
             ease: "easeInOut",
             delay: 2,
           }}
-          className="absolute top-1/3 -right-40 w-[600px] h-[600px] rounded-full bg-gradient-to-bl from-horizon-amber/30 via-horizon-yellow/15 to-transparent blur-[180px] pointer-events-none"
+          className="absolute top-1/3 -right-40 w-[320px] sm:w-[600px] h-[320px] sm:h-[600px] rounded-full bg-gradient-to-bl from-horizon-amber/30 via-horizon-yellow/15 to-transparent blur-[100px] sm:blur-[180px] pointer-events-none will-change-transform"
         />
 
         {/* ORB 3: HORIZON GREEN / GOLD (BOTTOM-LEFT) */}
@@ -169,7 +179,7 @@ export default function InteractiveBackground() {
             ease: "easeInOut",
             delay: 4,
           }}
-          className="absolute bottom-20 -left-32 w-[580px] h-[580px] rounded-full bg-gradient-to-tr from-horizon-green/25 via-horizon-amber/15 to-transparent blur-[170px] pointer-events-none"
+          className="absolute bottom-20 -left-32 w-[300px] sm:w-[580px] h-[300px] sm:h-[580px] rounded-full bg-gradient-to-tr from-horizon-green/25 via-horizon-amber/15 to-transparent blur-[90px] sm:blur-[170px] pointer-events-none will-change-transform"
         />
 
         {/* ORB 4: CORE AMBIENT HIGHLIGHT (CENTER DRIFT) */}
@@ -188,7 +198,7 @@ export default function InteractiveBackground() {
             repeat: Infinity,
             ease: "easeInOut",
           }}
-          className="absolute top-2/3 right-1/4 w-[500px] h-[500px] rounded-full bg-gradient-to-r from-horizon-orange/20 to-horizon-yellow/15 blur-[190px] pointer-events-none"
+          className="absolute top-2/3 right-1/4 w-[280px] sm:w-[500px] h-[280px] sm:h-[500px] rounded-full bg-gradient-to-r from-horizon-orange/20 to-horizon-yellow/15 blur-[100px] sm:blur-[190px] pointer-events-none will-change-transform"
         />
       </div>
 

@@ -149,7 +149,7 @@ export default function About() {
       <div className="absolute top-1/2 left-0 w-80 h-80 bg-horizon-orange/10 rounded-full blur-[140px] pointer-events-none" />
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-horizon-amber/10 rounded-full blur-[160px] pointer-events-none" />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-12">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
 
         {/* HEADER SECTION (SCROLL UP & DOWN ANIMATION) */}
         <motion.div
@@ -157,7 +157,7 @@ export default function About() {
           initial="hidden"
           whileInView="show"
           viewport={{ once: false, amount: 0.25 }}
-          className="text-center max-w-3xl mx-auto mb-20"
+          className="text-center max-w-3xl mx-auto mb-16 sm:mb-20"
         >
           <motion.div variants={fadeUp} className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.06] border border-white/10 backdrop-blur-md mb-4">
             <span className="w-2 h-2 rounded-full bg-horizon-amber" />
@@ -166,38 +166,38 @@ export default function About() {
             </span>
           </motion.div>
 
-          <motion.h2 variants={fadeUp} className="text-4xl sm:text-5xl font-black tracking-tight mb-6">
+          <motion.h2 variants={fadeUp} className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight mb-6">
             Architecting Systems That Drive{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-horizon-orange via-horizon-amber to-horizon-yellow">
               Real Impact
             </span>
           </motion.h2>
 
-          <motion.p variants={fadeUp} className="text-zinc-400 text-base sm:text-lg leading-relaxed font-light">
+          <motion.p variants={fadeUp} className="text-zinc-400 text-sm sm:text-base lg:text-lg leading-relaxed font-light">
             We are a tech-driven digital solutions firm committed to turning complex business challenges into resilient, scalable, and user-centric software systems.
           </motion.p>
         </motion.div>
 
         {/* MAIN CONTENT GRID */}
-        <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+        <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 items-start">
 
           {/* LEFT COLUMN: HOW WE WORK (STEPS & STATS) */}
-          <div className="lg:col-span-6 space-y-10">
+          <div className="lg:col-span-6 space-y-8 sm:space-y-10">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: false, amount: 0.2 }}
               transition={{ duration: 0.6 }}
             >
-              <h3 className="text-2xl font-bold tracking-tight mb-3 text-white">
+              <h3 className="text-xl sm:text-2xl font-bold tracking-tight mb-3 text-white">
                 Our Engineering Philosophy
               </h3>
-              <p className="text-zinc-400 text-sm leading-relaxed mb-8">
+              <p className="text-zinc-400 text-xs sm:text-sm leading-relaxed mb-6 sm:mb-8">
                 Every line of code and infrastructure component we build is designed for longevity, security, and effortless scaling.
               </p>
 
               {/* STEP CARDS (SCROLL ANIMATED) */}
-              <div className="space-y-4">
+              <div className="space-y-3.5 sm:space-y-4">
                 {PROCESS_STEPS.map((step, i) => (
                   <motion.div
                     key={i}
@@ -205,13 +205,13 @@ export default function About() {
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: false, amount: 0.25 }}
                     transition={{ duration: 0.5, delay: i * 0.12 }}
-                    className="flex gap-4 p-5 rounded-2xl bg-zinc-900/40 border border-white/5 hover:border-white/15 transition-all"
+                    className="flex flex-col sm:flex-row items-start sm:items-center gap-3.5 sm:gap-4 p-4 sm:p-5 rounded-2xl bg-zinc-900/40 border border-white/5 hover:border-white/15 transition-all"
                   >
                     <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-horizon-orange/20 to-horizon-amber/20 border border-horizon-amber/30 text-horizon-amber flex items-center justify-center font-black text-sm shrink-0">
                       {step.num}
                     </div>
                     <div>
-                      <h4 className="font-semibold text-white text-base mb-1">{step.title}</h4>
+                      <h4 className="font-semibold text-white text-sm sm:text-base mb-1">{step.title}</h4>
                       <p className="text-zinc-400 text-xs sm:text-sm leading-relaxed">{step.desc}</p>
                     </div>
                   </motion.div>
@@ -225,25 +225,25 @@ export default function About() {
               whileInView={{ opacity: 1, scale: 1, y: 0 }}
               viewport={{ once: false, amount: 0.3 }}
               transition={{ duration: 0.6 }}
-              className="grid grid-cols-3 gap-4 p-6 rounded-3xl bg-zinc-900/60 border border-white/10 text-center"
+              className="grid grid-cols-3 gap-2 sm:gap-4 p-4 sm:p-6 rounded-3xl bg-zinc-900/60 border border-white/10 text-center"
             >
               <div>
-                <p className="text-3xl sm:text-4xl font-black text-horizon-amber">
+                <p className="text-2xl sm:text-3xl md:text-4xl font-black text-horizon-amber">
                   <CountUp end={years} />+
                 </p>
-                <p className="text-xs text-zinc-400 font-medium mt-1">Years Running</p>
+                <p className="text-[10px] sm:text-xs text-zinc-400 font-medium mt-1 truncate">Years Running</p>
               </div>
-              <div className="border-x border-white/10">
-                <p className="text-3xl sm:text-4xl font-black text-white">
+              <div className="border-x border-white/10 px-1 sm:px-2">
+                <p className="text-2xl sm:text-3xl md:text-4xl font-black text-white">
                   <CountUp end={50} />+
                 </p>
-                <p className="text-xs text-zinc-400 font-medium mt-1">Projects Built</p>
+                <p className="text-[10px] sm:text-xs text-zinc-400 font-medium mt-1 truncate">Projects Built</p>
               </div>
               <div>
-                <p className="text-3xl sm:text-4xl font-black text-horizon-green">
+                <p className="text-2xl sm:text-3xl md:text-4xl font-black text-horizon-green">
                   <CountUp end={100} />%
                 </p>
-                <p className="text-xs text-zinc-400 font-medium mt-1">Client Trust</p>
+                <p className="text-[10px] sm:text-xs text-zinc-400 font-medium mt-1 truncate">Client Trust</p>
               </div>
             </motion.div>
           </div>

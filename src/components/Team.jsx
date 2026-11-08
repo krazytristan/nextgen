@@ -254,14 +254,18 @@ export default function Team() {
   const [isHovered, setIsHovered] = useState(false);
 
   const carouselRef = useRef(null);
-  const [containerWidth, setContainerWidth] = useState(0);
+  const [containerWidth, setContainerWidth] = useState(() =>
+    typeof window !== "undefined" ? Math.min(window.innerWidth - 32, 1200) : 360
+  );
 
   // Measure carousel container width for sub-pixel exact translation
   useEffect(() => {
     if (!carouselRef.current) return;
     const observer = new ResizeObserver((entries) => {
       for (const entry of entries) {
-        setContainerWidth(entry.contentRect.width);
+        if (entry.contentRect.width > 0) {
+          setContainerWidth(entry.contentRect.width);
+        }
       }
     });
     observer.observe(carouselRef.current);
@@ -428,7 +432,7 @@ export default function Team() {
               </span>
             </div>
 
-            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight mb-6">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight mb-6">
               The Architects & Engineers Behind{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-horizon-orange via-horizon-amber to-horizon-yellow">
                 Horizon IT
@@ -1069,7 +1073,7 @@ function MemberCard({ member, onSelect }) {
       {/* MAIN CARD BODY WITH CURSOR SPOTLIGHT */}
       <motion.div
         style={!reduceMotion ? { background: cardLight } : {}}
-        className="relative z-10 flex-1 flex flex-col justify-between p-6 sm:p-7 rounded-3xl bg-zinc-950/85 backdrop-blur-2xl border border-white/10 group-hover:border-white/20 shadow-2xl shadow-black/80 transition-colors duration-300 overflow-hidden"
+        className="relative z-10 flex-1 flex flex-col justify-between p-4 sm:p-7 rounded-3xl bg-zinc-950/85 backdrop-blur-2xl border border-white/10 group-hover:border-white/20 shadow-2xl shadow-black/80 transition-colors duration-300 overflow-hidden"
       >
         {/* LIGHT SHIMMER SWEEP ON HOVER */}
         <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/[0.05] to-transparent pointer-events-none" />
@@ -1171,7 +1175,7 @@ function MemberCard({ member, onSelect }) {
               {member.skills?.map((skill, i) => (
                 <span
                   key={i}
-                  className="text-[11px] px-2.5 py-1 rounded-lg bg-white/[0.04] text-zinc-300 border border-white/5 group-hover:border-white/15 transition-colors"
+                  className="text-[10px] sm:text-[11px] px-2.5 py-1 rounded-lg bg-white/[0.04] text-zinc-300 border border-white/5 group-hover:border-white/15 transition-colors"
                 >
                   {skill}
                 </span>
@@ -1182,7 +1186,7 @@ function MemberCard({ member, onSelect }) {
 
         {/* BOTTOM ACTIONS: DEDICATED PORTFOLIO LINK & BIO TRIGGER */}
         <div
-          className="pt-4 mt-5 border-t border-white/10 flex items-center gap-2.5 relative z-20"
+          className="pt-4 mt-5 border-t border-white/10 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 relative z-20"
           onClick={(e) => e.stopPropagation()}
         >
           {member.website ? (
@@ -1201,8 +1205,8 @@ function MemberCard({ member, onSelect }) {
           <button
             onClick={onSelect}
             className={`${
-              member.website ? "px-3.5" : "flex-1"
-            } py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-white font-semibold text-xs border border-white/10 hover:border-white/25 flex items-center justify-center gap-1.5 transition-all`}
+              member.website ? "sm:px-3.5" : "flex-1"
+            } py-2.5 px-3 rounded-xl bg-white/5 hover:bg-white/10 text-white font-semibold text-xs border border-white/10 hover:border-white/25 flex items-center justify-center gap-1.5 transition-all`}
           >
             <span>{member.website ? "Bio" : "Inspect Full Bio"}</span>
             <ArrowRight className="w-3.5 h-3.5 text-horizon-amber" />

@@ -56,7 +56,7 @@ export default function Footer() {
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-horizon-orange/5 rounded-full blur-[140px] pointer-events-none" />
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-horizon-amber/5 rounded-full blur-[140px] pointer-events-none" />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-12 py-16 sm:py-20">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-12 sm:py-20">
 
         {/* ================= TOP GRID (SCROLL UP & DOWN ANIMATION) ================= */}
         <motion.div

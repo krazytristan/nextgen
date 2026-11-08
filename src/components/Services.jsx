@@ -377,72 +377,72 @@ function ServiceModal({ service, onClose, onSelect }) {
   const Icon = service.icon;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-md">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md">
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
         transition={{ duration: 0.2 }}
-        className="relative w-full max-w-2xl bg-zinc-950 border border-white/15 rounded-3xl p-6 sm:p-8 shadow-2xl shadow-black overflow-hidden max-h-[90vh] flex flex-col"
+        className="relative w-full max-w-2xl bg-zinc-950 border border-white/15 rounded-3xl p-5 sm:p-8 shadow-2xl shadow-black overflow-hidden max-h-[88vh] flex flex-col"
       >
         {/* CLOSE BUTTON */}
         <button
           onClick={onClose}
-          className="absolute top-6 right-6 p-2 rounded-full bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white transition-colors"
+          className="absolute top-4 sm:top-6 right-4 sm:right-6 p-2 rounded-full bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white transition-colors z-20"
         >
           <X className="w-5 h-5" />
         </button>
 
         {/* HEADER */}
-        <div className="flex items-center gap-4 mb-6">
+        <div className="flex items-center gap-3.5 sm:gap-4 mb-5 sm:mb-6 pr-8">
           <div
-            className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${service.accent} flex items-center justify-center text-black shrink-0 shadow-lg`}
+            className={`w-11 h-11 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br ${service.accent} flex items-center justify-center text-black shrink-0 shadow-lg`}
           >
-            <Icon className="w-7 h-7 stroke-[2.2]" />
+            <Icon className="w-5 h-5 sm:w-7 sm:h-7 stroke-[2.2]" />
           </div>
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-xs font-bold uppercase tracking-wider text-horizon-amber">
+              <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-horizon-amber">
                 {service.category}
               </span>
               <span className="text-zinc-600">•</span>
-              <span className="text-xs text-zinc-400">{service.badge}</span>
+              <span className="text-[10px] sm:text-xs text-zinc-400">{service.badge}</span>
             </div>
-            <h3 className="text-2xl font-black text-white">{service.title}</h3>
+            <h3 className="text-lg sm:text-2xl font-black text-white">{service.title}</h3>
           </div>
         </div>
 
         {/* MODAL TABS */}
-        <div className="flex items-center gap-2 p-1 bg-white/5 rounded-xl border border-white/5 mb-6">
+        <div className="flex items-center gap-1.5 sm:gap-2 p-1 bg-white/5 rounded-xl border border-white/5 mb-5 sm:mb-6 overflow-x-auto no-scrollbar">
           <button
             onClick={() => setActiveTab("deliverables")}
-            className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${
+            className={`flex-1 py-2 px-2 rounded-lg text-[10px] sm:text-xs font-bold whitespace-nowrap transition-all ${
               activeTab === "deliverables"
                 ? "bg-gradient-to-r from-horizon-orange to-horizon-amber text-black shadow-sm"
                 : "text-zinc-400 hover:text-white"
             }`}
           >
-            Deliverables & Scope
+            Deliverables
           </button>
           <button
             onClick={() => setActiveTab("architecture")}
-            className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${
+            className={`flex-1 py-2 px-2 rounded-lg text-[10px] sm:text-xs font-bold whitespace-nowrap transition-all ${
               activeTab === "architecture"
                 ? "bg-gradient-to-r from-horizon-orange to-horizon-amber text-black shadow-sm"
                 : "text-zinc-400 hover:text-white"
             }`}
           >
-            Architecture & Tech
+            Architecture
           </button>
           <button
             onClick={() => setActiveTab("sla")}
-            className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${
+            className={`flex-1 py-2 px-2 rounded-lg text-[10px] sm:text-xs font-bold whitespace-nowrap transition-all ${
               activeTab === "sla"
                 ? "bg-gradient-to-r from-horizon-orange to-horizon-amber text-black shadow-sm"
                 : "text-zinc-400 hover:text-white"
             }`}
           >
-            SLA & Telemetry
+            SLA & Metrics
           </button>
         </div>
 
@@ -590,14 +590,14 @@ function SolutionBuilder({ onTransferScope }) {
   };
 
   return (
-    <div className="p-6 sm:p-10 rounded-3xl bg-zinc-950/80 border border-white/10 backdrop-blur-2xl shadow-2xl">
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-8 pb-6 border-b border-white/5">
+    <div className="p-4 sm:p-8 lg:p-10 rounded-3xl bg-zinc-950/80 border border-white/10 backdrop-blur-2xl shadow-2xl">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5 mb-8 pb-6 border-b border-white/5">
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-horizon-amber/10 border border-horizon-amber/20 text-horizon-amber text-xs font-bold uppercase tracking-wider mb-2">
             <Sliders className="w-3.5 h-3.5" />
             <span>Interactive Solution Architect</span>
           </div>
-          <h3 className="text-2xl sm:text-3xl font-black text-white">
+          <h3 className="text-xl sm:text-2xl md:text-3xl font-black text-white">
             Configure Your Project Scope & Estimate
           </h3>
           <p className="text-zinc-400 text-xs sm:text-sm mt-1">
@@ -605,17 +605,17 @@ function SolutionBuilder({ onTransferScope }) {
           </p>
         </div>
 
-        <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center gap-6 shrink-0">
+        <div className="p-3.5 sm:p-4 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-between sm:justify-start gap-4 sm:gap-6 self-start sm:self-auto shrink-0">
           <div>
-            <span className="text-[11px] text-zinc-400 block uppercase font-semibold">Estimated Delivery</span>
-            <span className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-horizon-orange to-horizon-amber">
+            <span className="text-[10px] sm:text-[11px] text-zinc-400 block uppercase font-semibold">Estimated Delivery</span>
+            <span className="text-xl sm:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-horizon-orange to-horizon-amber">
               ~{totalWeeks} Weeks
             </span>
           </div>
           <div className="h-8 w-[1px] bg-white/10" />
           <div>
-            <span className="text-[11px] text-zinc-400 block uppercase font-semibold">Active Modules</span>
-            <span className="text-2xl font-black text-white">
+            <span className="text-[10px] sm:text-[11px] text-zinc-400 block uppercase font-semibold">Active Modules</span>
+            <span className="text-xl sm:text-2xl font-black text-white">
               {selectedModules.length}
             </span>
           </div>
@@ -759,13 +759,13 @@ function ArchitectureVisualizer({ onInquireTier }) {
   const Icon = activeStage.icon;
 
   return (
-    <div className="p-6 sm:p-10 rounded-3xl bg-zinc-950/80 border border-white/10 backdrop-blur-2xl shadow-2xl">
-      <div className="max-w-2xl mb-8">
+    <div className="p-4 sm:p-8 lg:p-10 rounded-3xl bg-zinc-950/80 border border-white/10 backdrop-blur-2xl shadow-2xl">
+      <div className="max-w-2xl mb-6 sm:mb-8">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-horizon-amber/10 border border-horizon-amber/20 text-horizon-amber text-xs font-bold uppercase tracking-wider mb-2">
           <Zap className="w-3.5 h-3.5" />
           <span>Full-Stack Architecture</span>
         </div>
-        <h3 className="text-2xl sm:text-3xl font-black text-white">
+        <h3 className="text-xl sm:text-2xl md:text-3xl font-black text-white">
           Enterprise Cloud & Application Pipeline
         </h3>
         <p className="text-zinc-400 text-xs sm:text-sm mt-1">
@@ -774,25 +774,25 @@ function ArchitectureVisualizer({ onInquireTier }) {
       </div>
 
       {/* PIPELINE STEPPER BUTTONS */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-3 mb-6 sm:mb-8">
         {architectureStages.map((stage, idx) => (
           <button
             key={idx}
             onClick={() => setSelectedTier(idx)}
-            className={`p-4 rounded-2xl text-left border transition-all ${
+            className={`p-3 sm:p-4 rounded-2xl text-left border transition-all ${
               selectedTier === idx
                 ? "bg-gradient-to-r from-horizon-orange/15 to-horizon-amber/15 border-horizon-amber text-white shadow-lg shadow-orange-500/10"
                 : "bg-white/[0.02] border-white/5 text-zinc-400 hover:border-white/15 hover:text-white"
             }`}
           >
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center justify-between mb-1.5 sm:mb-2">
               <span className="text-[10px] font-black uppercase text-horizon-amber tracking-wider">
                 Tier {stage.tier}
               </span>
               <span className="w-2 h-2 rounded-full bg-horizon-green animate-pulse" />
             </div>
             <p className="text-xs font-bold text-white line-clamp-1">{stage.name}</p>
-            <p className="text-[11px] text-zinc-500 mt-1">{stage.latency}</p>
+            <p className="text-[10px] sm:text-[11px] text-zinc-500 mt-0.5 sm:mt-1">{stage.latency}</p>
           </button>
         ))}
       </div>
@@ -803,37 +803,37 @@ function ArchitectureVisualizer({ onInquireTier }) {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.25 }}
-        className="p-6 sm:p-8 rounded-3xl bg-white/[0.02] border border-white/10"
+        className="p-4 sm:p-8 rounded-3xl bg-white/[0.02] border border-white/10"
       >
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6 pb-6 border-b border-white/5">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-horizon-orange to-horizon-amber flex items-center justify-center text-black shadow-lg">
-              <Icon className="w-7 h-7 stroke-[2.2]" />
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6 mb-6 pb-6 border-b border-white/5">
+          <div className="flex items-center gap-3.5 sm:gap-4">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-horizon-orange to-horizon-amber flex items-center justify-center text-black shadow-lg shrink-0">
+              <Icon className="w-6 h-6 sm:w-7 sm:h-7 stroke-[2.2]" />
             </div>
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <span className="text-xs font-bold text-horizon-amber uppercase tracking-wider">
+                <span className="text-[10px] sm:text-xs font-bold text-horizon-amber uppercase tracking-wider">
                   Tier {activeStage.tier} Specifications
                 </span>
                 <span className="text-zinc-600">•</span>
-                <span className="text-xs text-horizon-green font-semibold">
+                <span className="text-[10px] sm:text-xs text-horizon-green font-semibold">
                   Status: {activeStage.status}
                 </span>
               </div>
-              <h4 className="text-xl sm:text-2xl font-black text-white">
+              <h4 className="text-lg sm:text-2xl font-black text-white">
                 {activeStage.name}
               </h4>
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-right">
-              <span className="text-[10px] text-zinc-400 uppercase block font-semibold">Latency Target</span>
-              <span className="text-sm font-bold text-horizon-amber">{activeStage.latency}</span>
+          <div className="flex items-center gap-3 self-stretch sm:self-auto justify-between sm:justify-start">
+            <div className="px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl bg-white/5 border border-white/10 text-right">
+              <span className="text-[9px] sm:text-[10px] text-zinc-400 uppercase block font-semibold">Latency Target</span>
+              <span className="text-xs sm:text-sm font-bold text-horizon-amber">{activeStage.latency}</span>
             </div>
             <button
               onClick={() => onInquireTier(activeStage.name)}
-              className="py-2.5 px-4 rounded-xl text-xs font-bold text-black bg-gradient-to-r from-horizon-orange to-horizon-amber hover:scale-105 transition-all shadow-md"
+              className="py-2.5 px-3.5 sm:px-4 rounded-xl text-xs font-bold text-black bg-gradient-to-r from-horizon-orange to-horizon-amber hover:scale-105 transition-all shadow-md shrink-0"
             >
               Inquire Architecture
             </button>
@@ -948,14 +948,14 @@ export default function Services() {
       <div className="absolute top-1/3 -right-20 w-96 h-96 bg-horizon-amber/10 rounded-full blur-[140px] pointer-events-none" />
       <div className="absolute bottom-10 -left-20 w-96 h-96 bg-horizon-orange/10 rounded-full blur-[140px] pointer-events-none" />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-12">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
         {/* TOP HEADER (SCROLL UP & DOWN ANIMATION) */}
         <motion.div
           initial={{ opacity: 0, y: 35 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: false, amount: 0.2 }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-12"
+          className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 sm:gap-8 mb-10 sm:mb-12"
         >
           <div className="max-w-2xl">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.06] border border-white/10 backdrop-blur-md mb-4">
@@ -965,22 +965,22 @@ export default function Services() {
               </span>
             </div>
 
-            <h2 className="text-4xl sm:text-5xl font-black tracking-tight leading-tight">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-tight">
               Engineered For Scalability,{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-horizon-orange via-horizon-amber to-horizon-yellow">
                 Built For Performance
               </span>
             </h2>
-            <p className="text-zinc-400 text-sm sm:text-base mt-3 max-w-xl">
+            <p className="text-zinc-400 text-xs sm:text-sm md:text-base mt-3 max-w-xl">
               From mission-critical software systems to cloud architectures, explore our catalog or use the interactive builder to scope your technical horizon.
             </p>
           </div>
 
           {/* VIEW SWITCHER TABS */}
-          <div className="flex items-center gap-1.5 bg-zinc-900/80 p-1.5 rounded-2xl border border-white/10 self-start lg:self-auto shadow-xl">
+          <div className="flex items-center gap-1 sm:gap-1.5 bg-zinc-900/80 p-1.5 rounded-2xl border border-white/10 self-stretch sm:self-start lg:self-auto shadow-xl overflow-x-auto no-scrollbar">
             <button
               onClick={() => setActiveTab("catalog")}
-              className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
+              className={`flex-1 sm:flex-initial px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-[11px] sm:text-xs font-bold whitespace-nowrap transition-all ${
                 activeTab === "catalog"
                   ? "bg-gradient-to-r from-horizon-orange to-horizon-amber text-black shadow-md shadow-orange-500/20"
                   : "text-zinc-400 hover:text-white"
@@ -990,7 +990,7 @@ export default function Services() {
             </button>
             <button
               onClick={() => setActiveTab("builder")}
-              className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
+              className={`flex-1 sm:flex-initial px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-[11px] sm:text-xs font-bold whitespace-nowrap transition-all ${
                 activeTab === "builder"
                   ? "bg-gradient-to-r from-horizon-orange to-horizon-amber text-black shadow-md shadow-orange-500/20"
                   : "text-zinc-400 hover:text-white"
@@ -1000,7 +1000,7 @@ export default function Services() {
             </button>
             <button
               onClick={() => setActiveTab("blueprint")}
-              className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
+              className={`flex-1 sm:flex-initial px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-[11px] sm:text-xs font-bold whitespace-nowrap transition-all ${
                 activeTab === "blueprint"
                   ? "bg-gradient-to-r from-horizon-orange to-horizon-amber text-black shadow-md shadow-orange-500/20"
                   : "text-zinc-400 hover:text-white"

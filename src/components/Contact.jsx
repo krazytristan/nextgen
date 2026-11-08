@@ -154,7 +154,7 @@ export default function Contact() {
       <div className="absolute top-1/4 -left-20 w-96 h-96 bg-horizon-orange/10 rounded-full blur-[140px] pointer-events-none" />
       <div className="absolute bottom-10 -right-20 w-96 h-96 bg-horizon-amber/10 rounded-full blur-[140px] pointer-events-none" />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-12">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
 
         {/* HEADER (SCROLL UP & DOWN ANIMATION) */}
         <motion.div
@@ -162,7 +162,7 @@ export default function Contact() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: false, amount: 0.2 }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="text-center max-w-3xl mx-auto mb-20"
+          className="text-center max-w-3xl mx-auto mb-16 sm:mb-20"
         >
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.06] border border-white/10 backdrop-blur-md mb-4">
             <span className="w-2 h-2 rounded-full bg-horizon-amber" />
@@ -171,20 +171,20 @@ export default function Contact() {
             </span>
           </div>
 
-          <h2 className="text-4xl sm:text-5xl font-black tracking-tight mb-6">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight mb-6">
             Let’s Build Something{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-horizon-orange via-horizon-amber to-horizon-yellow">
               Extraordinary
             </span>
           </h2>
 
-          <p className="text-zinc-400 text-base sm:text-lg leading-relaxed font-light">
+          <p className="text-zinc-400 text-sm sm:text-base lg:text-lg leading-relaxed font-light">
             Have a project in mind, need technical advisory, or want to explore an enterprise system? Reach out and our engineering leads will respond promptly.
           </p>
         </motion.div>
 
         {/* CONTACT GRID */}
-        <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+        <div className="grid lg:grid-cols-12 gap-8 lg:gap-16 items-start">
 
           {/* LEFT: INFO TILES */}
           <motion.div
@@ -194,7 +194,7 @@ export default function Contact() {
             transition={{ duration: 0.6 }}
             className="lg:col-span-5 space-y-6"
           >
-            <div className="p-8 rounded-3xl bg-zinc-950/80 border border-white/10 backdrop-blur-xl shadow-2xl">
+            <div className="p-5 sm:p-8 rounded-3xl bg-zinc-950/80 border border-white/10 backdrop-blur-xl shadow-2xl">
               <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-horizon-amber" />
                 <span>Contact Channels</span>
@@ -255,7 +255,7 @@ export default function Contact() {
           >
             <form
               onSubmit={handleSubmit}
-              className="p-8 sm:p-10 rounded-3xl bg-zinc-950/80 border border-white/10 backdrop-blur-2xl shadow-2xl shadow-black space-y-6"
+              className="p-5 sm:p-8 lg:p-10 rounded-3xl bg-zinc-950/80 border border-white/10 backdrop-blur-2xl shadow-2xl shadow-black space-y-6"
             >
               <div className="grid sm:grid-cols-2 gap-6">
                 <FormField

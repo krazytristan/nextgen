@@ -142,21 +142,20 @@ export default function Chatbot() {
       {/* FLOAT BUTTON */}
       <motion.button
         onClick={() => setOpen(!open)}
-        className="fixed bottom-6 right-6 z-50 w-16 h-16 rounded-full 
-        bg-gradient-to-r from-horizon-amber to-yellow-400 
-        shadow-xl flex items-center justify-center text-black"
+        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 w-14 h-14 sm:w-16 sm:h-16 rounded-full 
+        bg-gradient-to-r from-horizon-orange via-horizon-amber to-horizon-yellow 
+        shadow-xl shadow-orange-500/25 flex items-center justify-center text-black hover:scale-105 transition-transform"
         whileTap={{ scale: 0.9 }}
+        aria-label="Open Horizon Assistant"
       >
-        <BsRobot size={28} />
+        <BsRobot className="w-6 h-6 sm:w-7 sm:h-7" />
       </motion.button>
 
       {/* CHAT WINDOW */}
       <AnimatePresence>
         {open && (
           <motion.div
-            drag
-            dragMomentum={false}
-            className="fixed bottom-24 right-6 w-[360px] max-h-[520px] 
+            className="fixed bottom-20 right-3 sm:bottom-24 sm:right-6 w-[calc(100vw-24px)] sm:w-[380px] max-w-[420px] max-h-[80vh] sm:max-h-[540px] 
             bg-zinc-950/95 backdrop-blur-3xl border border-white/15 
             rounded-3xl shadow-2xl shadow-black flex flex-col z-50 overflow-hidden text-white"
             initial={{ opacity: 0, scale: 0.85, y: 20 }}
