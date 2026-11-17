@@ -128,6 +128,33 @@ export default function Contact() {
         await new Promise((res) => setTimeout(res, 1200));
       }
 
+      /* SYNC WITH ENTERPRISE ADMIN PORTAL IN REAL TIME */
+      const newInquiry = {
+        id: `INQ-${Math.floor(1000 + Math.random() * 9000)}`,
+        name: form.name.trim(),
+        email: form.email.trim(),
+        subject: form.subject?.trim() || "Enterprise Digital Inquiry",
+        message: form.message.trim(),
+        date: new Date().toISOString().replace("T", " ").slice(0, 16),
+        priority:
+          form.subject?.toLowerCase().includes("urgent") ||
+          form.message?.toLowerCase().includes("urgent")
+            ? "Urgent"
+            : form.subject?.toLowerCase().includes("scope")
+            ? "High"
+            : "Normal",
+        status: "New",
+        budget: "$25,000 - $60,000",
+      };
+
+      try {
+        const stored = localStorage.getItem("horizon_inquiries");
+        const list = stored ? JSON.parse(stored) : [];
+        localStorage.setItem("horizon_inquiries", JSON.stringify([newInquiry, ...list]));
+      } catch (storageErr) {
+        console.error("Local storage sync error:", storageErr);
+      }
+
       setStatus("success");
       setForm({ name: "", email: "", subject: "", message: "" });
     } catch (err) {

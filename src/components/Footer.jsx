@@ -13,7 +13,7 @@ import {
   faTiktok,
   faGithub,
 } from "@fortawesome/free-brands-svg-icons";
-import { ArrowUp, Sparkles, ArrowRight } from "lucide-react";
+import { ArrowUp, Sparkles, ArrowRight, Shield, Lock } from "lucide-react";
 
 export default function Footer() {
   /* 🧲 MAGNETIC BUTTON */
@@ -137,6 +137,18 @@ export default function Footer() {
                   Contact
                 </a>
               </li>
+              <li>
+                <button
+                  onClick={() => {
+                    window.location.hash = "admin";
+                    window.dispatchEvent(new CustomEvent("horizon-open-admin"));
+                  }}
+                  className="hover:text-horizon-amber transition-colors flex items-center gap-1.5 text-left text-zinc-400 group pt-1"
+                >
+                  <Shield className="w-3.5 h-3.5 text-horizon-amber group-hover:scale-110 transition-transform" />
+                  <span>Admin Console</span>
+                </button>
+              </li>
             </ul>
           </div>
 
@@ -192,10 +204,20 @@ export default function Footer() {
             © {new Date().getFullYear()} Horizon IT Solutions. All rights reserved.
           </p>
 
-          <div className="flex items-center gap-6">
+          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
             <a href="#about" className="hover:text-zinc-300 transition-colors">Privacy Policy</a>
             <a href="#about" className="hover:text-zinc-300 transition-colors">Terms of Service</a>
             <a href="#about" className="hover:text-zinc-300 transition-colors">Security</a>
+            <button
+              onClick={() => {
+                window.location.hash = "admin";
+                window.dispatchEvent(new CustomEvent("horizon-open-admin"));
+              }}
+              className="hover:text-horizon-amber flex items-center gap-1 transition-colors text-zinc-400"
+            >
+              <Lock className="w-3 h-3 text-horizon-amber" />
+              <span>Admin Console</span>
+            </button>
           </div>
 
           <button

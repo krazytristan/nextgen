@@ -586,6 +586,28 @@ function SolutionBuilder({ onTransferScope }) {
     const subject = `[Project Scope] ${solution.name} (${scale.name})`;
     const message = `Configured Scope from Interactive Builder:\n- Solution Foundation: ${solution.name}\n- Target Scale: ${scale.name}\n- Add-on Modules: ${activeModuleNames || "Standard"}\n- Estimated Delivery Window: ~${totalWeeks} Weeks\n- Recommended Stack: ${solution.stack}`;
 
+    /* SYNC CONFIGURED SCOPE TO ENTERPRISE ADMIN SCOPE REPOSITORY */
+    const newScope = {
+      id: `SCP-${Math.floor(1000 + Math.random() * 9000)}`,
+      solution: solution.name,
+      scale: scale.name,
+      modules: selectedModules
+        .map((id) => addonModules.find((m) => m.id === id)?.name)
+        .filter(Boolean),
+      estimatedWeeks: totalWeeks,
+      stack: solution.stack,
+      date: new Date().toISOString().replace("T", " ").slice(0, 16),
+      client: "Visitor (Interactive Solution Architect)",
+    };
+
+    try {
+      const stored = localStorage.getItem("horizon_scopes");
+      const list = stored ? JSON.parse(stored) : [];
+      localStorage.setItem("horizon_scopes", JSON.stringify([newScope, ...list]));
+    } catch (err) {
+      console.error("Failed to store configured scope:", err);
+    }
+
     onTransferScope(subject, message);
   };
 

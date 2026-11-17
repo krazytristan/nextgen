@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { Menu, X, ArrowRight, Sparkles } from "lucide-react";
+import { Menu, X, ArrowRight, Sparkles, Shield } from "lucide-react";
 
 const sections = [
   { id: "home", label: "Home" },
@@ -131,7 +131,19 @@ export default function Navbar({ loaded = true }) {
             </ul>
 
             {/* RIGHT ACTION */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2.5 sm:gap-3">
+              <button
+                onClick={() => {
+                  window.location.hash = "admin";
+                  window.dispatchEvent(new CustomEvent("horizon-open-admin"));
+                }}
+                className="hidden md:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-semibold text-zinc-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 hover:border-horizon-amber/40 transition-all shadow-sm group"
+                title="Enterprise Admin Console"
+              >
+                <Shield className="w-3.5 h-3.5 text-horizon-amber group-hover:scale-110 transition-transform" />
+                <span>Admin</span>
+              </button>
+
               <a
                 href="#contact"
                 className="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold text-black bg-gradient-to-r from-horizon-orange via-horizon-amber to-horizon-yellow shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 hover:scale-105 active:scale-95 transition-all duration-200"
@@ -211,14 +223,31 @@ export default function Navbar({ loaded = true }) {
                 })}
               </div>
 
-              <a
-                href="#contact"
-                onClick={() => setOpen(false)}
-                className="mt-2 w-full py-3.5 rounded-2xl flex items-center justify-center gap-2 font-bold text-black text-sm bg-gradient-to-r from-horizon-orange via-horizon-amber to-horizon-yellow shadow-lg shadow-orange-500/25"
-              >
-                <Sparkles className="w-4 h-4" />
-                <span>Start a Project</span>
-              </a>
+              <div className="pt-2 space-y-2">
+                <button
+                  onClick={() => {
+                    setOpen(false);
+                    window.location.hash = "admin";
+                    window.dispatchEvent(new CustomEvent("horizon-open-admin"));
+                  }}
+                  className="w-full py-3 px-4 rounded-2xl flex items-center justify-between text-xs font-bold text-zinc-200 bg-white/5 border border-white/10 hover:border-horizon-amber/40 hover:bg-white/10 transition"
+                >
+                  <div className="flex items-center gap-2">
+                    <Shield className="w-4 h-4 text-horizon-amber" />
+                    <span>Enterprise Admin Console</span>
+                  </div>
+                  <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-horizon-amber/20 text-horizon-amber">#admin</span>
+                </button>
+
+                <a
+                  href="#contact"
+                  onClick={() => setOpen(false)}
+                  className="w-full py-3.5 rounded-2xl flex items-center justify-center gap-2 font-bold text-black text-sm bg-gradient-to-r from-horizon-orange via-horizon-amber to-horizon-yellow shadow-lg shadow-orange-500/25"
+                >
+                  <Sparkles className="w-4 h-4" />
+                  <span>Start a Project</span>
+                </a>
+              </div>
             </motion.div>
           </>
         )}
